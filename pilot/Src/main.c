@@ -5,6 +5,7 @@
 #include "Common.h"
 #include "Quaternion.h"
 #include "Motors.h"
+#include "PID.h"
 
 I2C_HandleTypeDef hi2c1;
 SPI_HandleTypeDef hspi1;
@@ -29,6 +30,20 @@ static volatile uint8_t _imu_data_ready = 0;
 static volatile uint16_t _missed_imu_data = 0;
 static float _orientation[4] = { 1.0f, 0.0f, 0.0f, 0.0f }; // Quaternion
 static float _reference_orientation[4] = { 1.0f, 0.0f, 0.0f, 0.0f };
+
+static const float Kp = 3.0f;
+static const float Ki = 0.08f;
+static const float Kd = 10.0f;
+static const float i_limit = 100.0f;
+
+static const float Kp_yaw = 8.0f;
+static const float Ki_yaw = 0.4f;
+static const float Kd_yaw = 0.0f;
+static const float i_limit_yaw = 40.0f;
+
+static PID _pid_pitch;
+static PID _pid_roll;
+static PID _pid_yaw;
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
@@ -75,6 +90,33 @@ int main(void)
 		}
 	}
 	
+	_pid_pitch.kp = Kp;
+	_pid_pitch.ki = Ki;
+	_pid_pitch.kp = Kp;
+	_pid_pitch.i_limit = i_limit;
+	_pid_pitch.error_sum = 0.0f;
+	_pid_pitch.last_error = 0.0f;
+	_pid_pitch.error = 0.0f;
+	_pid_pitch.error_rate = 0.0f;
+	
+	_pid_roll.kp = Kp;
+	_pid_roll.ki = Ki;
+	_pid_roll.kp = Kp;
+	_pid_roll.i_limit = i_limit;
+	_pid_roll.error_sum = 0.0f;
+	_pid_roll.last_error = 0.0f;
+	_pid_roll.error = 0.0f;
+	_pid_roll.error_rate = 0.0f;
+	
+	_pid_yaw.kp = Kp_yaw;
+	_pid_yaw.ki = Ki_yaw;
+	_pid_yaw.kp = Kp_yaw;
+	_pid_yaw.i_limit = i_limit_yaw;
+	_pid_yaw.error_sum = 0.0f;
+	_pid_yaw.last_error = 0.0f;
+	_pid_yaw.error = 0.0f;
+	_pid_yaw.error_rate = 0.0f;
+	
 	while (1)
 	{
 		if (_imu_data_ready)
@@ -97,6 +139,40 @@ int main(void)
 			pitch *= 180.0f / PI;
 			yaw *= 180.0f / PI;
 			roll *= 180.0f / PI;
+			
+			static uint16_t throttle = 0.0f;
+			
+			float dt_ms;
+			
+			float target_pitch = 0.0f;
+			float target_roll = 0.0f;
+			float target_yaw_rate = 0.0f;
+			
+			float output_pitch = 0.0f;
+			float output_roll = 0.0f;
+			float output_yaw = 0.0f;
+
+			if (throttle >= 150)
+			{
+				output_pitch = PID_Compute(&_pid_pitch, target_pitch, pitch, dt_ms);
+				output_roll = PID_Compute(&_pid_roll, target_roll, roll, dt_ms);
+				output_yaw = -PID_Compute(&_pid_yaw, target_yaw_rate, gyro[2] * (PI / 180.0f), dt_ms);
+			}
+			else
+			{
+				_pid_pitch.error_sum = 0.0f;
+				_pid_roll.error_sum = 0.0f;
+				_pid_yaw.error_sum = 0.0f;
+			}
+	
+			float motors[4];
+			
+			motors[0] = throttle + output_pitch + output_roll - output_yaw; // Back Right
+			motors[1] = throttle + output_pitch - output_roll + output_yaw; // Back Left
+			motors[2] = throttle - output_pitch + output_roll + output_yaw; // Front Right
+			motors[3] = throttle - output_pitch - output_roll - output_yaw; // Front Left
+			
+			Motors_Set(motors);
 			
 			if (pitch > 45.0f)
 				HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, GPIO_PIN_SET);
