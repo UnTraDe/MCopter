@@ -62,9 +62,7 @@ int main(void)
 	MX_TIM5_Init();
 	MX_USART1_UART_Init();
 
-	Motors_Init();
-	
-	HAL_TIM_PWM_Start(&htim5, TIM_CHANNEL_1);
+	Motors_Init(&htim5);
 	
 	uint8_t error = ICM20689_Init(&hspi1, GPIOA, GPIO_PIN_4);
 	
@@ -290,7 +288,7 @@ static void MX_TIM5_Init(void)
 	htim5.Instance = TIM5;
 	htim5.Init.Prescaler = 0;
 	htim5.Init.CounterMode = TIM_COUNTERMODE_UP;
-	htim5.Init.Period = 10000;
+	htim5.Init.Period = 12500;
 	htim5.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
 	if (HAL_TIM_PWM_Init(&htim5) != HAL_OK)
 	{
@@ -305,7 +303,7 @@ static void MX_TIM5_Init(void)
 	}
 
 	sConfigOC.OCMode = TIM_OCMODE_PWM1;
-	sConfigOC.Pulse = 5000;
+	sConfigOC.Pulse = 0;
 	sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
 	sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
 	if (HAL_TIM_PWM_ConfigChannel(&htim5, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)

@@ -1,6 +1,8 @@
 #ifndef MOTORS_H_
 #define MOTORS_H_
 
-void Motors_Init();
+#include "stm32f4xx_hal.h"
+
+void Motors_Init(TIM_HandleTypeDef* htim);
 
 #endif
