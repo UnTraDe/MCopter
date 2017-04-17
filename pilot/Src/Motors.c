@@ -3,10 +3,10 @@
 static TIM_HandleTypeDef* _htim;
 static TIM_OC_InitTypeDef _template_config;
 
-#define PERIOD_MIN		6250
-#define PERIOD_MAX		12500
-#define PERIOD_RANGE	(PERIOD_MAX - PERIOD_MIN)
-#define MAX_VALUE		1000
+#define PERIOD_MIN			6250
+#define PERIOD_MAX			12500
+#define PERIOD_RESOLUTION	(PERIOD_MAX - PERIOD_MIN)
+#define MAX_VALUE			1000
 
 void Motors_Init(TIM_HandleTypeDef* htim)
 {
@@ -27,13 +27,10 @@ void Motors_Init(TIM_HandleTypeDef* htim)
 	HAL_TIM_PWM_Start(_htim, TIM_CHANNEL_4);
 }
 
-void Motors_Set(uint16_t* values)
+void Motors_Set(float* values)
 {
 	for (int i = 0; i < 4; i++)
 	{
-		if (values[i] > MAX_VALUE)
-			values[i] = MAX_VALUE;
-		
 		uint32_t channel;
 		
 		switch (i)
@@ -52,7 +49,12 @@ void Motors_Set(uint16_t* values)
 			break;
 		}
 		
-		_template_config.Pulse = PERIOD_MIN + ((PERIOD_RANGE / MAX_VALUE) * values[i]);
+		float value = values[i];
+		
+		if (value > MAX_VALUE)
+			value = MAX_VALUE;
+		
+		_template_config.Pulse = PERIOD_MIN + ((PERIOD_RESOLUTION / MAX_VALUE) * value);
 		HAL_TIM_PWM_ConfigChannel(_htim, &_template_config, channel);
 		HAL_TIM_PWM_Start(_htim, channel);
 	}
