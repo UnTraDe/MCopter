@@ -118,6 +118,55 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	}	
 }
 
+static uint8_t _uart_rx_data_buffer[32];
+static uint8_t _uart_tx_data_buffer[32];
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart)
+{
+	if (_uart_rx_data_buffer[0] == 0x0F && _uart_rx_data_buffer[24] == 0x00)
+	{
+		uint16_t channels[16];
+		uint8_t* payload = &_uart_rx_data_buffer[1];
+		
+		channels[0]  = (uint16_t)((payload[0]    | payload[1] << 8) & 0x07FF);
+		channels[1]  = (uint16_t)((payload[1] >> 3 | payload[2] << 5) & 0x07FF);
+		channels[2]  = (uint16_t)((payload[2] >> 6 | payload[3] << 2 | payload[4] << 10) & 0x07FF);
+		channels[3]  = (uint16_t)((payload[4] >> 1 | payload[5] << 7) & 0x07FF);
+		channels[4]  = (uint16_t)((payload[5] >> 4 | payload[6] << 4) & 0x07FF);
+		channels[5]  = (uint16_t)((payload[6] >> 7 | payload[7] << 1 | payload[8] << 9) & 0x07FF);
+		channels[6]  = (uint16_t)((payload[8] >> 2 | payload[9] << 6) & 0x07FF);
+		channels[7]  = (uint16_t)((payload[9] >> 5 | payload[10] << 3) & 0x07FF);
+		channels[8]  = (uint16_t)((payload[11]   | payload[12] << 8) & 0x07FF);
+		channels[9]  = (uint16_t)((payload[12] >> 3 | payload[13] << 5) & 0x07FF);
+		channels[10] = (uint16_t)((payload[13] >> 6 | payload[14] << 2 | payload[15] << 10) & 0x07FF);
+		channels[11] = (uint16_t)((payload[15] >> 1 | payload[16] << 7) & 0x07FF);
+		channels[12] = (uint16_t)((payload[16] >> 4 | payload[17] << 4) & 0x07FF);
+		channels[13] = (uint16_t)((payload[17] >> 7 | payload[18] << 1 | payload[19] << 9) & 0x07FF);
+		channels[14] = (uint16_t)((payload[19] >> 2 | payload[20] << 6) & 0x07FF);
+		channels[15] = (uint16_t)((payload[20] >> 5 | payload[21] << 3) & 0x07FF);
+		
+		for (int i = 0; i < 32; i++)
+			_uart_tx_data_buffer[i] = 0;
+		
+		sprintf((char*)_uart_tx_data_buffer, "%d, %d, %d, %d\r\n", channels[0], channels[1], channels[2], channels[3]);
+		
+		//HAL_UART_Transmit_DMA(&huart1, _uart_tx_data_buffer, 32);	
+		HAL_UART_Transmit(&huart1, _uart_tx_data_buffer, 32, 4);
+	}
+	
+	HAL_UART_Receive_DMA(&huart1, _uart_rx_data_buffer, 25);
+}
+
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
+{
+	HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_5);
+}
+
+void HAL_UART_ErrorCallback(UART_HandleTypeDef* huart)
+{
+	HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_5);
+}
+
 /* USER CODE END 0 */
 
 int main(void)
@@ -193,29 +242,13 @@ int main(void)
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
+		
+	HAL_UART_Receive_DMA(&huart1, _uart_rx_data_buffer, 25);
+	
 	while (1)
 	{
-		uint8_t data[25] = { 0 };
-		HAL_StatusTypeDef status = HAL_UART_Receive(&huart1, data, 25, 100);
-		
-		if (status != HAL_OK)
-		{
-			HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_5);
-		}
-		
-		if (data[1] == 0x0F)
-		{
-			uint16_t ch1 = (data[2] << 8) | (data[3] & 0b11100000);
-			
-			char buf[32] = { 0 };
-			
-			sprintf(buf, "ch1: %d\r\n", ch1);
-			
-			HAL_UART_Transmit(&huart1, (uint8_t*)buf, 32, 100);
-		}
-		
-		//HAL_UART_Transmit(&huart1, "bla", 32, 100);
-		//HAL_Delay(1000);
+		//	HAL_UART_Transmit(&huart1, "bla", 32, 100);
+		HAL_Delay(1000);
 		continue;
 		
 		if (_imu_data_ready)
