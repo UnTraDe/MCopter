@@ -1,7 +1,7 @@
 [PreviousGenFiles]
-HeaderPath=C:/Users/UnTraDe/Desktop/Pilot/stm32_version/pilot/Inc
+HeaderPath=C:/Users/UnTraDe/Desktop/MCopter/pilot/Inc
 HeaderFiles=stm32f4xx_it.h;stm32f4xx_hal_conf.h;main.h;
-SourcePath=C:/Users/UnTraDe/Desktop/Pilot/stm32_version/pilot/Src
+SourcePath=C:/Users/UnTraDe/Desktop/MCopter/pilot/Src
 SourceFiles=stm32f4xx_it.h;stm32f4xx_hal_conf.h;main.h;stm32f4xx_it.c;stm32f4xx_hal_msp.c;main.c;
 
 [PreviousLibFiles]

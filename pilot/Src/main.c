@@ -119,6 +119,29 @@ int main(void)
 	
 	while (1)
 	{
+		uint8_t data[25] = { 0 };
+		HAL_StatusTypeDef status = HAL_UART_Receive(&huart1, data, 25, 100);
+		
+		if (status != HAL_OK)
+		{
+			HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_5);
+		}
+		
+		if (data[1] == 0x0F)
+		{
+			uint16_t ch1 = (data[2] << 8) | (data[3] & 0b11100000);
+			
+			char buf[32] = { 0 };
+			
+			sprintf(buf, "ch1: %d\r\n", ch1);
+			
+			HAL_UART_Transmit(&huart1, (uint8_t*)buf, 32, 100);
+		}
+		
+		//HAL_UART_Transmit(&huart1, "bla", 32, 100);
+		//HAL_Delay(1000);
+		continue;
+		
 		if (_imu_data_ready)
 		{
 			_imu_data_ready = 0;
@@ -173,11 +196,6 @@ int main(void)
 			motors[3] = throttle - output_pitch - output_roll - output_yaw; // Front Left
 			
 			Motors_Set(motors);
-			
-			if (pitch > 45.0f)
-				HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, GPIO_PIN_SET);
-			else
-				HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, GPIO_PIN_RESET);
 		}
 	}
 
@@ -411,10 +429,10 @@ static void MX_USART1_UART_Init(void)
 {
 
 	huart1.Instance = USART1;
-	huart1.Init.BaudRate = 115200;
-	huart1.Init.WordLength = UART_WORDLENGTH_8B;
-	huart1.Init.StopBits = UART_STOPBITS_1;
-	huart1.Init.Parity = UART_PARITY_NONE;
+	huart1.Init.BaudRate = 100000;
+	huart1.Init.WordLength = UART_WORDLENGTH_9B;
+	huart1.Init.StopBits = UART_STOPBITS_2;
+	huart1.Init.Parity = UART_PARITY_EVEN;
 	huart1.Init.Mode = UART_MODE_TX_RX;
 	huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
 	huart1.Init.OverSampling = UART_OVERSAMPLING_16;
@@ -501,7 +519,7 @@ void Error_Handler(void)
 	while (1) 
 	{
 	}
-	/* USER CODE END Error_Handler */ 
+  /* USER CODE END Error_Handler */ 
 }
 
 #ifdef USE_FULL_ASSERT

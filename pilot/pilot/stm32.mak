@@ -27,7 +27,7 @@ LINUX_PACKAGES +=
 CFLAGS += 
 CXXFLAGS += 
 ASFLAGS += -mfpu=fpv4-sp-d16
-LDFLAGS += --specs=nano.specs 
+LDFLAGS +=  
 COMMONFLAGS += -mcpu=cortex-m4 -mthumb -mfloat-abi=hard
 LINKER_SCRIPT := $(BSP_ROOT)/STM32F4xxxx/LinkerScripts/STM32F410RB_flash.lds
 
