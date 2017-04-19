@@ -1,4 +1,4 @@
-update=19-Apr-17 09:28:07
+update=19-Apr-17 10:23:34
 version=1
 last_client=kicad
 [pcbnew]
@@ -74,3 +74,4 @@ LibName32=switches
 LibName33=icm-20689
 LibName34=sn74lvc1g04
 LibName35=ms5611
+LibName36=mag3110
