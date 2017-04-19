@@ -1,0 +1,3 @@
+(fp_lib_table
+  (lib (name Local_prints)(type KiCad)(uri ${KIPRJMOD}/prints)(options "")(descr ""))
+)
