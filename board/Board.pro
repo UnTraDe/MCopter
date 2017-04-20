@@ -1,4 +1,4 @@
-update=19-Apr-17 10:23:34
+update=20-Apr-17 13:49:23
 version=1
 last_client=kicad
 [pcbnew]
@@ -75,3 +75,4 @@ LibName33=icm-20689
 LibName34=sn74lvc1g04
 LibName35=ms5611
 LibName36=mag3110
+LibName37=ms5637
