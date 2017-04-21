@@ -26,7 +26,7 @@ void AxisFusion_MahonyAHRSupdate(float* q, float gx, float gy, float gz, float a
 	// magnetometer normalisation)
 	if ((mx == 0.0f) && (my == 0.0f) && (mz == 0.0f))
 	{
-		MahonyAHRSupdateIMU(q, gx, gy, gz, ax, ay, az);
+		AxisFusion_MahonyAHRSupdateIMU(q, gx, gy, gz, ax, ay, az);
 		return;
 	}
 
