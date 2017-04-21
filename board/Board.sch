@@ -838,12 +838,12 @@ F 3 "" H 1750 4150 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Text GLabel 8600 4550 2    60   Input ~ 0
-I2C_SDA
-Text GLabel 9050 4450 2    60   Input ~ 0
-I2C_SCL
+I2C1_SDA
+Text GLabel 9100 4450 2    60   Input ~ 0
+I2C1_SCL
 Text GLabel 8600 4350 2    60   Input ~ 0
 UART_RX
-Text GLabel 9050 4250 2    60   Input ~ 0
+Text GLabel 9100 4250 2    60   Input ~ 0
 UART_TX
 $Comp
 L CONN_01X03 J11
@@ -857,9 +857,9 @@ F 3 "" H 9450 6850 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Text GLabel 9000 6850 0    60   Input ~ 0
-I2C_SDA
+I2C1_SDA
 Text GLabel 8500 6750 0    60   Input ~ 0
-I2C_SCL
+I2C1_SCL
 $Comp
 L GND #PWR027
 U 1 1 58D99A32
@@ -963,7 +963,6 @@ F 3 "" H 4900 1200 50  0001 C CNN
 	1    4900 1200
 	1    0    0    -1  
 $EndComp
-NoConn ~ 8200 4650
 NoConn ~ 8200 3750
 NoConn ~ 8200 3650
 NoConn ~ 2800 4650
@@ -1132,12 +1131,11 @@ NoConn ~ 2800 4750
 NoConn ~ 2800 4850
 NoConn ~ 2800 4950
 NoConn ~ 8200 3150
-NoConn ~ 8200 4750
 NoConn ~ 8200 4150
 Text GLabel 12950 4850 0    60   Input ~ 0
-I2C_SCL
+I2C2_SCL
 Text GLabel 13400 4750 0    60   Input ~ 0
-I2C_SDA
+I2C2_SDA
 $Comp
 L VCC #PWR037
 U 1 1 58F863D2
@@ -1176,9 +1174,9 @@ MAG_INT
 Text GLabel 12850 6000 0    60   Input ~ 0
 MAG_INT
 Text GLabel 12850 6200 0    60   Input ~ 0
-I2C_SDA
+I2C2_SDA
 Text GLabel 12400 6100 0    60   Input ~ 0
-I2C_SCL
+I2C2_SCL
 $Comp
 L C C15
 U 1 1 58F9D356
@@ -1393,7 +1391,6 @@ Wire Wire Line
 Connection ~ 14950 2650
 Wire Wire Line
 	14100 2650 15250 2650
-Connection ~ 1400 1450
 Wire Wire Line
 	1300 3850 2050 3850
 Wire Wire Line
@@ -1550,11 +1547,11 @@ Wire Wire Line
 Wire Wire Line
 	8200 4550 8600 4550
 Wire Wire Line
-	9050 4450 8200 4450
+	8200 4450 9100 4450
 Wire Wire Line
 	8200 4350 8600 4350
 Wire Wire Line
-	9050 4250 8200 4250
+	8200 4250 9100 4250
 Wire Wire Line
 	8500 6750 9250 6750
 Wire Wire Line
@@ -1744,4 +1741,56 @@ Wire Wire Line
 Wire Wire Line
 	2550 7400 2650 7400
 Connection ~ 2650 7400
+Text GLabel 10800 4750 2    60   Input ~ 0
+I2C2_SDA
+Wire Wire Line
+	8200 4650 11350 4650
+Text GLabel 11350 4650 2    60   Input ~ 0
+I2C2_SCL
+Wire Wire Line
+	8200 4750 10800 4750
+$Comp
+L R R11
+U 1 1 58FA170E
+P 10650 4300
+F 0 "R11" V 10730 4300 50  0000 C CNN
+F 1 "10K" V 10650 4300 50  0000 C CNN
+F 2 "Resistors_SMD:R_0805_HandSoldering" V 10580 4300 50  0001 C CNN
+F 3 "" H 10650 4300 50  0001 C CNN
+	1    10650 4300
+	1    0    0    -1  
+$EndComp
+$Comp
+L R R10
+U 1 1 58FA180F
+P 10450 4300
+F 0 "R10" V 10530 4300 50  0000 C CNN
+F 1 "10K" V 10450 4300 50  0000 C CNN
+F 2 "Resistors_SMD:R_0805_HandSoldering" V 10380 4300 50  0001 C CNN
+F 3 "" H 10450 4300 50  0001 C CNN
+	1    10450 4300
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	10450 4450 10450 4750
+Connection ~ 10450 4750
+Wire Wire Line
+	10650 4450 10650 4650
+Connection ~ 10650 4650
+$Comp
+L VCC #PWR044
+U 1 1 58FA1F57
+P 10550 4000
+F 0 "#PWR044" H 10550 3850 50  0001 C CNN
+F 1 "VCC" H 10550 4150 50  0000 C CNN
+F 2 "" H 10550 4000 50  0001 C CNN
+F 3 "" H 10550 4000 50  0001 C CNN
+	1    10550 4000
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	10450 4150 10650 4150
+Wire Wire Line
+	10550 4150 10550 4000
+Connection ~ 10550 4150
 $EndSCHEMATC
