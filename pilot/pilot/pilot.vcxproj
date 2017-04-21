@@ -182,6 +182,7 @@
     <ClInclude Include="..\Inc\Motors.h" />
     <ClInclude Include="..\Inc\PID.h" />
     <ClInclude Include="..\Inc\Quaternion.h" />
+    <ClInclude Include="..\Inc\Semaphore.h" />
     <ClInclude Include="..\Inc\stm32f4xx_hal_conf.h" />
     <ClInclude Include="..\Inc\stm32f4xx_it.h" />
   </ItemGroup>
@@ -278,6 +279,7 @@
     <ClCompile Include="..\Src\Motors.c" />
     <ClCompile Include="..\Src\PID.c" />
     <ClCompile Include="..\Src\Quaternion.c" />
+    <ClCompile Include="..\Src\Semaphore.c" />
     <ClCompile Include="..\Src\stm32f4xx_hal_msp.c" />
     <ClCompile Include="..\Src\stm32f4xx_it.c" />
     <ClCompile Include="..\Src\system_stm32f4xx.c" />
