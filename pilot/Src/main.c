@@ -81,12 +81,6 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 
 /* USER CODE BEGIN 0 */
 
-static volatile uint8_t _imu_data_ready = 0;
-static volatile uint16_t _missed_imu_data = 0;
-
-static float _orientation[4] = { 1.0f, 0.0f, 0.0f, 0.0f }; // Quaternion
-static float _reference_orientation[4] = { 1.0f, 0.0f, 0.0f, 0.0f };
-
 static const float Kp = 3.0f;
 static const float Ki = 0.08f;
 static const float Kd = 10.0f;
@@ -96,6 +90,20 @@ static const float Kp_yaw = 8.0f;
 static const float Ki_yaw = 0.4f;
 static const float Kd_yaw = 0.0f;
 static const float i_limit_yaw = 40.0f;
+
+static const float _control_angle = 30.0f;
+static const float _yaw_max_rate = 120.0f;
+
+static volatile uint8_t _imu_data_ready = 0;
+static volatile uint16_t _missed_imu_data = 0;
+
+static float _orientation[4] = { 1.0f, 0.0f, 0.0f, 0.0f }; // Quaternion
+static float _reference_orientation[4] = { 1.0f, 0.0f, 0.0f, 0.0f };
+
+static uint16_t _throttle = 0;
+static float _target_yaw_rate = 0.0f;
+static float _target_pitch = 0.0f;
+static float _target_roll = 0.0f;
 
 static PID _pid_pitch;
 static PID _pid_roll;
@@ -107,6 +115,11 @@ static volatile struct
 	uint16_t channels[16];
 	uint8_t fail_safe;
 } _receiver_data;
+
+
+#define SBUS_CHANNEL_MIN 				172
+#define SBUS_CHANNEL_MAX 				1811
+#define SBUS_CHANENL_RANGE				(SBUS_CHANNEL_MAX - SBUS_CHANNEL_MIN)
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
@@ -133,39 +146,46 @@ static uint8_t _uart_tx_data_buffer[32];
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart)
 {
-	if (_uart_rx_data_buffer[0] == 0x0F && _uart_rx_data_buffer[24] == 0x00)
+	if (!_receiver_data_ready)
 	{
-		uint8_t* payload = &_uart_rx_data_buffer[1];
+		if (_uart_rx_data_buffer[0] == 0x0F && _uart_rx_data_buffer[24] == 0x00)
+		{
+			uint8_t* payload = &_uart_rx_data_buffer[1];
 		
-		_receiver_data.channels[0]  = (uint16_t)((payload[0]    | payload[1] << 8) & 0x07FF);
-		_receiver_data.channels[1]  = (uint16_t)((payload[1] >> 3 | payload[2] << 5) & 0x07FF);
-		_receiver_data.channels[2]  = (uint16_t)((payload[2] >> 6 | payload[3] << 2 | payload[4] << 10) & 0x07FF);
-		_receiver_data.channels[3]  = (uint16_t)((payload[4] >> 1 | payload[5] << 7) & 0x07FF);
-		_receiver_data.channels[4]  = (uint16_t)((payload[5] >> 4 | payload[6] << 4) & 0x07FF);
-		_receiver_data.channels[5]  = (uint16_t)((payload[6] >> 7 | payload[7] << 1 | payload[8] << 9) & 0x07FF);
-		_receiver_data.channels[6]  = (uint16_t)((payload[8] >> 2 | payload[9] << 6) & 0x07FF);
-		_receiver_data.channels[7]  = (uint16_t)((payload[9] >> 5 | payload[10] << 3) & 0x07FF);
-		_receiver_data.channels[8]  = (uint16_t)((payload[11]   | payload[12] << 8) & 0x07FF);
-		_receiver_data.channels[9]  = (uint16_t)((payload[12] >> 3 | payload[13] << 5) & 0x07FF);
-		_receiver_data.channels[10] = (uint16_t)((payload[13] >> 6 | payload[14] << 2 | payload[15] << 10) & 0x07FF);
-		_receiver_data.channels[11] = (uint16_t)((payload[15] >> 1 | payload[16] << 7) & 0x07FF);
-		_receiver_data.channels[12] = (uint16_t)((payload[16] >> 4 | payload[17] << 4) & 0x07FF);
-		_receiver_data.channels[13] = (uint16_t)((payload[17] >> 7 | payload[18] << 1 | payload[19] << 9) & 0x07FF);
-		_receiver_data.channels[14] = (uint16_t)((payload[19] >> 2 | payload[20] << 6) & 0x07FF);
-		_receiver_data.channels[15] = (uint16_t)((payload[20] >> 5 | payload[21] << 3) & 0x07FF);
+			_receiver_data.channels[0]  = (uint16_t)((payload[0]    | payload[1] << 8) & 0x07FF);
+			_receiver_data.channels[1]  = (uint16_t)((payload[1] >> 3 | payload[2] << 5) & 0x07FF);
+			_receiver_data.channels[2]  = (uint16_t)((payload[2] >> 6 | payload[3] << 2 | payload[4] << 10) & 0x07FF);
+			_receiver_data.channels[3]  = (uint16_t)((payload[4] >> 1 | payload[5] << 7) & 0x07FF);
+			_receiver_data.channels[4]  = (uint16_t)((payload[5] >> 4 | payload[6] << 4) & 0x07FF);
+			_receiver_data.channels[5]  = (uint16_t)((payload[6] >> 7 | payload[7] << 1 | payload[8] << 9) & 0x07FF);
+			_receiver_data.channels[6]  = (uint16_t)((payload[8] >> 2 | payload[9] << 6) & 0x07FF);
+			_receiver_data.channels[7]  = (uint16_t)((payload[9] >> 5 | payload[10] << 3) & 0x07FF);
+			_receiver_data.channels[8]  = (uint16_t)((payload[11]   | payload[12] << 8) & 0x07FF);
+			_receiver_data.channels[9]  = (uint16_t)((payload[12] >> 3 | payload[13] << 5) & 0x07FF);
+			_receiver_data.channels[10] = (uint16_t)((payload[13] >> 6 | payload[14] << 2 | payload[15] << 10) & 0x07FF);
+			_receiver_data.channels[11] = (uint16_t)((payload[15] >> 1 | payload[16] << 7) & 0x07FF);
+			_receiver_data.channels[12] = (uint16_t)((payload[16] >> 4 | payload[17] << 4) & 0x07FF);
+			_receiver_data.channels[13] = (uint16_t)((payload[17] >> 7 | payload[18] << 1 | payload[19] << 9) & 0x07FF);
+			_receiver_data.channels[14] = (uint16_t)((payload[19] >> 2 | payload[20] << 6) & 0x07FF);
+			_receiver_data.channels[15] = (uint16_t)((payload[20] >> 5 | payload[21] << 3) & 0x07FF);
 		
+			_receiver_data_ready = 1;
 		
-		_receiver_data_ready = 1;
-		//__LDREXB()
-		//for (int i = 0; i < 32; i++)
-			//_uart_tx_data_buffer[i] = 0;
+			//for (int i = 0; i < 32; i++)
+				//_uart_tx_data_buffer[i] = 0;
 		
 		//sprintf((char*)_uart_tx_data_buffer, "%d, %d, %d, %d\r\n", channels[0], channels[1], channels[2], channels[3]);
 		
 		//HAL_UART_Transmit_DMA(&huart1, _uart_tx_data_buffer, 32);	
 		//HAL_UART_Transmit(&huart1, _uart_tx_data_buffer, 32, 4);
+		}
+	}
+	else
+	{
+		// TODO increment some dropped counter
 	}
 	
+	// TODO can this be replaced by configuring the DMA as circular?
 	HAL_UART_Receive_DMA(&huart1, _uart_rx_data_buffer, 25);
 }
 
@@ -249,9 +269,24 @@ int main(void)
 	
 	while (1)
 	{
-		//	HAL_UART_Transmit(&huart1, "bla", 32, 100);
-		HAL_Delay(1000);
-		continue;
+		if (_receiver_data_ready)
+		{
+			uint16_t throttle = ((_receiver_data.channels[0] - SBUS_CHANNEL_MIN) / (float)SBUS_CHANENL_RANGE) * 1000.0f;
+
+			if (throttle > 800)
+				_throttle = 800;
+			else
+				_throttle = throttle;
+
+			_target_yaw_rate = ((_receiver_data.channels[3] - SBUS_CHANNEL_MIN) * (_yaw_max_rate / SBUS_CHANENL_RANGE)) - (_yaw_max_rate / 2.0f);
+			_target_pitch = ((_receiver_data.channels[2] - SBUS_CHANNEL_MIN) * (_control_angle / SBUS_CHANENL_RANGE)) - (_control_angle / 2.0f);
+			_target_roll = ((_receiver_data.channels[1] - SBUS_CHANNEL_MIN) * (_control_angle / SBUS_CHANENL_RANGE)) - (_control_angle / 2.0f);
+
+			_target_yaw_rate *= -1;
+			_target_roll *= -1;
+			
+			_receiver_data_ready = 0;
+		}
 		
 		if (_imu_data_ready)
 		{
@@ -263,19 +298,19 @@ int main(void)
 			ICM20689_ReadAccel(accel);
 			
 			AxisFusion_MahonyAHRSupdateIMU(_orientation, gyro[0]*PI / 180.0f, -gyro[1]*PI / 180.0f, -gyro[2]*PI / 180.0f, -accel[0], accel[1], accel[2]);
-			
+		
 			float quat[4];
 			Quaternion_Multiply(_reference_orientation, _orientation, quat);
-
+		
 			float pitch, roll, yaw;
 			Quaternion_ToEuler(quat, &pitch, &roll, &yaw);
-			
+		
 			pitch *= 180.0f / PI;
 			yaw *= 180.0f / PI;
 			roll *= 180.0f / PI;
 			
 			static uint16_t throttle = 0.0f;
-			
+		
 			float dt_ms;
 			
 			float target_pitch = 0.0f;
