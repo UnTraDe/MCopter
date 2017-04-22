@@ -36,6 +36,8 @@
 
 /* USER CODE BEGIN Includes */
 
+#include <string.h>
+
 #include "ICM20689.h"
 #include "AxisFusion.h"
 #include "Common.h"
@@ -127,7 +129,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	{
 		// TODO need to disable interrupts before doing SPI stuff?
 		
-		if (_imu_data_ready)
+		if (!_imu_data_ready)
 		{
 			if (ICM20689_DataReady())
 				_imu_data_ready = 1;
@@ -285,6 +287,10 @@ int main(void)
 			_target_yaw_rate *= -1;
 			_target_roll *= -1;
 			
+			//memset(_uart_tx_data_buffer, 0, sizeof(_uart_tx_data_buffer));
+			//sprintf((char*)_uart_tx_data_buffer, "%d, %d, %d, %d\r\n", _receiver_data.channels[0], _receiver_data.channels[1], _receiver_data.channels[2], _receiver_data.channels[3]);
+			//HAL_UART_Transmit(&huart1, _uart_tx_data_buffer, 32, 100);
+			
 			_receiver_data_ready = 0;
 		}
 		
@@ -309,8 +315,6 @@ int main(void)
 			yaw *= 180.0f / PI;
 			roll *= 180.0f / PI;
 			
-			static uint16_t throttle = 0.0f;
-		
 			float dt_ms;
 			
 			float target_pitch = 0.0f;
@@ -321,7 +325,7 @@ int main(void)
 			float output_roll = 0.0f;
 			float output_yaw = 0.0f;
 
-			if (throttle >= 150)
+			if (_throttle >= 150)
 			{
 				output_pitch = PID_Compute(&_pid_pitch, target_pitch, pitch, dt_ms);
 				output_roll = PID_Compute(&_pid_roll, target_roll, roll, dt_ms);
@@ -336,10 +340,10 @@ int main(void)
 	
 			float motors[4];
 			
-			motors[0] = throttle + output_pitch + output_roll - output_yaw; // Back Right
-			motors[1] = throttle + output_pitch - output_roll + output_yaw; // Back Left
-			motors[2] = throttle - output_pitch + output_roll + output_yaw; // Front Right
-			motors[3] = throttle - output_pitch - output_roll - output_yaw; // Front Left
+			motors[0] = _throttle + output_pitch + output_roll - output_yaw; // Back Right
+			motors[1] = _throttle + output_pitch - output_roll + output_yaw; // Back Left
+			motors[2] = _throttle - output_pitch + output_roll + output_yaw; // Front Right
+			motors[3] = _throttle - output_pitch - output_roll - output_yaw; // Front Left
 			
 			Motors_Set(motors);
 		}
