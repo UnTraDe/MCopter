@@ -3,8 +3,8 @@
 static TIM_HandleTypeDef* _htim;
 static TIM_OC_InitTypeDef _template_config;
 
-#define PERIOD_MIN			6250
-#define PERIOD_MAX			12500
+#define PERIOD_MIN			50000
+#define PERIOD_MAX			100000
 #define PERIOD_RESOLUTION	(PERIOD_MAX - PERIOD_MIN)
 #define MAX_VALUE			1000
 
@@ -13,7 +13,7 @@ void Motors_Init(TIM_HandleTypeDef* htim)
 	_htim = htim;
 	
 	_template_config.OCMode = TIM_OCMODE_PWM1;
-	_template_config.Pulse = 6250;
+	_template_config.Pulse = PERIOD_MIN;
 	_template_config.OCPolarity = TIM_OCPOLARITY_HIGH;
 	_template_config.OCFastMode = TIM_OCFAST_DISABLE;
 	

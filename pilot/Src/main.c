@@ -269,8 +269,24 @@ int main(void)
 		
 	HAL_UART_Receive_DMA(&huart1, _uart_rx_data_buffer, 25);
 	
+	int value = 0;
+	
 	while (1)
 	{
+		value = (value + 10) % 1010;
+		HAL_Delay(10);
+		
+		float motors[4];
+			
+		motors[0] = value;
+		motors[1] = value;
+		motors[2] = value;
+		motors[3] = value;
+			
+		Motors_Set(motors);
+		
+		continue;
+		
 		if (_receiver_data_ready)
 		{
 			uint16_t throttle = ((_receiver_data.channels[0] - SBUS_CHANNEL_MIN) / (float)SBUS_CHANENL_RANGE) * 1000.0f;
@@ -279,6 +295,15 @@ int main(void)
 				_throttle = 800;
 			else
 				_throttle = throttle;
+			
+//			float motors[4];
+//			
+//			motors[0] = throttle;
+//			motors[1] = throttle;
+//			motors[2] = throttle;
+//			motors[3] = throttle;
+//			
+//			Motors_Set(motors);
 
 			_target_yaw_rate = ((_receiver_data.channels[3] - SBUS_CHANNEL_MIN) * (_yaw_max_rate / SBUS_CHANENL_RANGE)) - (_yaw_max_rate / 2.0f);
 			_target_pitch = ((_receiver_data.channels[2] - SBUS_CHANNEL_MIN) * (_control_angle / SBUS_CHANENL_RANGE)) - (_control_angle / 2.0f);
@@ -345,7 +370,7 @@ int main(void)
 			motors[2] = _throttle - output_pitch + output_roll + output_yaw; // Front Right
 			motors[3] = _throttle - output_pitch - output_roll - output_yaw; // Front Left
 			
-			Motors_Set(motors);
+			//Motors_Set(motors);
 		}
 	}
   /* USER CODE END 3 */
@@ -535,7 +560,7 @@ static void MX_TIM5_Init(void)
 	htim5.Instance = TIM5;
 	htim5.Init.Prescaler = 0;
 	htim5.Init.CounterMode = TIM_COUNTERMODE_UP;
-	htim5.Init.Period = 12500;
+	htim5.Init.Period = 125000;
 	htim5.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
 	if (HAL_TIM_PWM_Init(&htim5) != HAL_OK)
 	{
