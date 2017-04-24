@@ -252,6 +252,28 @@
     (add_net VCC)
   )
 
+  (module via-0.6mm (layer F.Cu) (tedit 58FDD9D2) (tstamp 58FDDAD0)
+    (at 117.82 74.51)
+    (fp_text reference REF** (at 0 0) (layer F.SilkS) hide
+      (effects (font (size 0.127 0.127) (thickness 0.03175)))
+    )
+    (fp_text value via-0.6mm (at 0 0) (layer F.Fab) hide
+      (effects (font (size 0.127 0.127) (thickness 0.03175)))
+    )
+    (pad 1 thru_hole circle (at 0 0) (size 0.6 0.6) (drill 0.4) (layers *.Cu))
+  )
+
+  (module via-0.6mm (layer F.Cu) (tedit 58FDD9D2) (tstamp 58FDDAB3)
+    (at 117.82 73.01)
+    (fp_text reference REF** (at 0 0) (layer F.SilkS) hide
+      (effects (font (size 0.127 0.127) (thickness 0.03175)))
+    )
+    (fp_text value via-0.6mm (at 0 0) (layer F.Fab) hide
+      (effects (font (size 0.127 0.127) (thickness 0.03175)))
+    )
+    (pad 1 thru_hole circle (at 0 0) (size 0.6 0.6) (drill 0.4) (layers *.Cu))
+  )
+
   (module via-0.6mm (layer F.Cu) (tedit 58FDD9D2) (tstamp 58FDDAE3)
     (at 119.32 76.01)
     (fp_text reference REF** (at 0 0) (layer F.SilkS) hide
@@ -285,17 +307,6 @@
     (pad 1 thru_hole circle (at 0 0) (size 0.6 0.6) (drill 0.4) (layers *.Cu))
   )
 
-  (module via-0.6mm (layer F.Cu) (tedit 58FDD9D2) (tstamp 58FDDAD0)
-    (at 117.82 74.51)
-    (fp_text reference REF** (at 0 0) (layer F.SilkS) hide
-      (effects (font (size 0.127 0.127) (thickness 0.03175)))
-    )
-    (fp_text value via-0.6mm (at 0 0) (layer F.Fab) hide
-      (effects (font (size 0.127 0.127) (thickness 0.03175)))
-    )
-    (pad 1 thru_hole circle (at 0 0) (size 0.6 0.6) (drill 0.4) (layers *.Cu))
-  )
-
   (module via-0.6mm (layer F.Cu) (tedit 58FDD9D2) (tstamp 58FDDACA)
     (at 119.32 74.51)
     (fp_text reference REF** (at 0 0) (layer F.SilkS) hide
@@ -320,17 +331,6 @@
 
   (module via-0.6mm (layer F.Cu) (tedit 58FDD9D2) (tstamp 58FDDAC0)
     (at 119.32 73.01)
-    (fp_text reference REF** (at 0 0) (layer F.SilkS) hide
-      (effects (font (size 0.127 0.127) (thickness 0.03175)))
-    )
-    (fp_text value via-0.6mm (at 0 0) (layer F.Fab) hide
-      (effects (font (size 0.127 0.127) (thickness 0.03175)))
-    )
-    (pad 1 thru_hole circle (at 0 0) (size 0.6 0.6) (drill 0.4) (layers *.Cu))
-  )
-
-  (module via-0.6mm (layer F.Cu) (tedit 58FDD9D2) (tstamp 58FDDAB3)
-    (at 117.82 73.01)
     (fp_text reference REF** (at 0 0) (layer F.SilkS) hide
       (effects (font (size 0.127 0.127) (thickness 0.03175)))
     )
