@@ -369,7 +369,7 @@
   )
 
   (module Capacitors_SMD:C_0805_HandSoldering (layer F.Cu) (tedit 58AA84A8) (tstamp 58F8BF46)
-    (at 104.4 102.35)
+    (at 100.6 104.5)
     (descr "Capacitor SMD 0805, hand soldering")
     (tags "capacitor 0805")
     (path /58D31811)
@@ -441,7 +441,7 @@
   )
 
   (module Capacitors_SMD:C_0805_HandSoldering (layer F.Cu) (tedit 58AA84A8) (tstamp 58F8BF52)
-    (at 130.85 102.175)
+    (at 130.85 102.5)
     (descr "Capacitor SMD 0805, hand soldering")
     (tags "capacitor 0805")
     (path /58D2C984)
@@ -549,7 +549,7 @@
   )
 
   (module Capacitors_SMD:C_0805_HandSoldering (layer F.Cu) (tedit 58AA84A8) (tstamp 58F8BF64)
-    (at 135.6 102.025)
+    (at 135.7 102.5)
     (descr "Capacitor SMD 0805, hand soldering")
     (tags "capacitor 0805")
     (path /58D2FA24)
@@ -729,7 +729,7 @@
   )
 
   (module Capacitors_SMD:C_0805_HandSoldering (layer F.Cu) (tedit 58AA84A8) (tstamp 58F8BF82)
-    (at 106.85 74 270)
+    (at 104.7 76.9 270)
     (descr "Capacitor SMD 0805, hand soldering")
     (tags "capacitor 0805")
     (path /58D3A318)
@@ -765,7 +765,7 @@
   )
 
   (module Capacitors_SMD:C_0805_HandSoldering (layer F.Cu) (tedit 58AA84A8) (tstamp 58F8BF88)
-    (at 133.4 105.35)
+    (at 129.55 109.35)
     (descr "Capacitor SMD 0805, hand soldering")
     (tags "capacitor 0805")
     (path /58F8E2E9)
@@ -801,7 +801,7 @@
   )
 
   (module Capacitors_SMD:C_0805_HandSoldering (layer F.Cu) (tedit 58FCE136) (tstamp 58F8BF8E)
-    (at 122.5 111.8 180)
+    (at 116.9 118.3 180)
     (descr "Capacitor SMD 0805, hand soldering")
     (tags "capacitor 0805")
     (path /58F9D356)
@@ -837,7 +837,7 @@
   )
 
   (module Capacitors_ThroughHole:CP_Radial_D5.0mm_P2.00mm (layer F.Cu) (tedit 58765D06) (tstamp 58F8BF94)
-    (at 123.75 74.75)
+    (at 124.35 74.75)
     (descr "CP, Radial series, Radial, pin pitch=2.00mm, , diameter=5mm, Electrolytic Capacitor")
     (tags "CP Radial series Radial pin pitch 2.00mm  diameter 5mm Electrolytic Capacitor")
     (path /58D3A6D5)
@@ -985,7 +985,7 @@
   )
 
   (module Capacitors_SMD:C_0805_HandSoldering (layer F.Cu) (tedit 58AA84A8) (tstamp 58F8BF9A)
-    (at 122.45 114.35 180)
+    (at 116.85 120.85 180)
     (descr "Capacitor SMD 0805, hand soldering")
     (tags "capacitor 0805")
     (path /58F9D7F5)
@@ -1021,7 +1021,7 @@
   )
 
   (module Capacitors_SMD:C_0805_HandSoldering (layer F.Cu) (tedit 58AA84A8) (tstamp 58F8BFA0)
-    (at 114.9 112.3 270)
+    (at 112.8 112.75 270)
     (descr "Capacitor SMD 0805, hand soldering")
     (tags "capacitor 0805")
     (path /58D86E50)
@@ -1057,7 +1057,7 @@
   )
 
   (module Capacitors_SMD:C_0805_HandSoldering (layer F.Cu) (tedit 58AA84A8) (tstamp 58F8BFA6)
-    (at 135.05 116.3 90)
+    (at 134.25 119.6 90)
     (descr "Capacitor SMD 0805, hand soldering")
     (tags "capacitor 0805")
     (path /58FA02EF)
@@ -1093,7 +1093,7 @@
   )
 
   (module Capacitors_SMD:C_0805_HandSoldering (layer F.Cu) (tedit 58AA84A8) (tstamp 58F8BFAC)
-    (at 116.85 112.3 270)
+    (at 114.75 112.75 270)
     (descr "Capacitor SMD 0805, hand soldering")
     (tags "capacitor 0805")
     (path /58D8752B)
@@ -1129,7 +1129,7 @@
   )
 
   (module Capacitors_SMD:C_0805_HandSoldering (layer F.Cu) (tedit 58AA84A8) (tstamp 58F8BFB2)
-    (at 132.95 116.3 90)
+    (at 132.15 119.6 90)
     (descr "Capacitor SMD 0805, hand soldering")
     (tags "capacitor 0805")
     (path /58F9F1A7)
@@ -1165,7 +1165,7 @@
   )
 
   (module Capacitors_SMD:C_0805_HandSoldering (layer F.Cu) (tedit 58AA84A8) (tstamp 58F8BFB8)
-    (at 121.3 106.9 90)
+    (at 118.95 106.5 90)
     (descr "Capacitor SMD 0805, hand soldering")
     (tags "capacitor 0805")
     (path /58D85611)
@@ -1201,7 +1201,7 @@
   )
 
   (module Capacitors_SMD:C_0805_HandSoldering (layer F.Cu) (tedit 58AA84A8) (tstamp 58F8BFBE)
-    (at 130.75 116.3 90)
+    (at 129.95 119.6 90)
     (descr "Capacitor SMD 0805, hand soldering")
     (tags "capacitor 0805")
     (path /58FA7867)
@@ -1311,15 +1311,15 @@
   )
 
   (module LEDs:LED_0805 (layer F.Cu) (tedit 58FCE32F) (tstamp 58F8BFD0)
-    (at 110.4 79.25 180)
+    (at 105.2 81.35)
     (descr "LED 0805 smd package")
     (tags "LED led 0805 SMD smd SMT smt smdled SMDLED smtled SMTLED")
     (path /58DA3213)
     (attr smd)
-    (fp_text reference D2 (at -0.1 -1.85 180) (layer F.SilkS)
+    (fp_text reference D2 (at -0.1 -1.85) (layer F.SilkS)
       (effects (font (size 1 1) (thickness 0.15)))
     )
-    (fp_text value LED (at 0 1.55 180) (layer F.Fab)
+    (fp_text value LED (at 0 1.55) (layer F.Fab)
       (effects (font (size 1 1) (thickness 0.15)))
     )
     (fp_line (start -1.8 -0.7) (end -1.8 0.7) (layer F.SilkS) (width 0.12))
@@ -1337,9 +1337,9 @@
     (fp_line (start 1.95 0.85) (end -1.95 0.85) (layer F.CrtYd) (width 0.05))
     (fp_line (start -1.95 0.85) (end -1.95 -0.85) (layer F.CrtYd) (width 0.05))
     (fp_line (start -1.95 -0.85) (end 1.95 -0.85) (layer F.CrtYd) (width 0.05))
-    (pad 2 smd rect (at 1.1 0) (size 1.2 1.2) (layers F.Cu F.Paste F.Mask)
+    (pad 2 smd rect (at 1.1 0 180) (size 1.2 1.2) (layers F.Cu F.Paste F.Mask)
       (net 5 VCC))
-    (pad 1 smd rect (at -1.1 0) (size 1.2 1.2) (layers F.Cu F.Paste F.Mask)
+    (pad 1 smd rect (at -1.1 0 180) (size 1.2 1.2) (layers F.Cu F.Paste F.Mask)
       (net 13 "Net-(D2-Pad1)"))
     (model LEDs.3dshapes/LED_0805.wrl
       (at (xyz 0 0 0))
@@ -1349,7 +1349,7 @@
   )
 
   (module Connect:GS3 (layer F.Cu) (tedit 58613494) (tstamp 58F8BFD7)
-    (at 110.6 104.45 270)
+    (at 106.85 102.9 270)
     (descr "3-pin solder bridge")
     (tags "solder bridge")
     (path /58F7ABDE)
@@ -1377,7 +1377,7 @@
   )
 
   (module Pin_Headers:Pin_Header_Straight_2x04_Pitch2.54mm (layer F.Cu) (tedit 58CD4EC5) (tstamp 58F8BFE3)
-    (at 131.85 76 90)
+    (at 132.1 76 90)
     (descr "Through hole straight pin header, 2x04, 2.54mm pitch, double rows")
     (tags "Through hole pin header THT 2x04 2.54mm double row")
     (path /58F9957B)
@@ -1799,7 +1799,7 @@
   )
 
   (module Connect:GS3 (layer F.Cu) (tedit 58FCE1B1) (tstamp 58F8C029)
-    (at 110.6 99.4 270)
+    (at 106.85 97.85 270)
     (descr "3-pin solder bridge")
     (tags "solder bridge")
     (path /58F7D38E)
@@ -1827,7 +1827,7 @@
   )
 
   (module Connect:GS3 (layer F.Cu) (tedit 58613494) (tstamp 58F8C030)
-    (at 143.55 116.25)
+    (at 142.75 119.55)
     (descr "3-pin solder bridge")
     (tags "solder bridge")
     (path /58F67690)
@@ -1855,7 +1855,7 @@
   )
 
   (module Pin_Headers:Pin_Header_Straight_1x02_Pitch2.54mm (layer F.Cu) (tedit 58CD4EC1) (tstamp 58F8C036)
-    (at 103.9 74.6)
+    (at 99.65 77.3)
     (descr "Through hole straight pin header, 1x02, 2.54mm pitch, single row")
     (tags "Through hole pin header THT 1x02 2.54mm single row")
     (path /58D3C9B1)
@@ -1935,15 +1935,15 @@
   )
 
   (module Connect:GS2 (layer F.Cu) (tedit 586134A1) (tstamp 58F8C043)
-    (at 101.45 88.75)
+    (at 99.3 83.85 90)
     (descr "2-pin solder bridge")
     (tags "solder bridge")
     (path /58F6F703)
     (attr smd)
-    (fp_text reference J16 (at 1.78 0 90) (layer F.SilkS)
+    (fp_text reference J16 (at 1.78 0 180) (layer F.SilkS)
       (effects (font (size 1 1) (thickness 0.15)))
     )
-    (fp_text value GS2 (at -1.8 0 90) (layer F.Fab)
+    (fp_text value GS2 (at -1.8 0 180) (layer F.Fab)
       (effects (font (size 1 1) (thickness 0.15)))
     )
     (fp_line (start 1.1 -1.45) (end 1.1 1.5) (layer F.CrtYd) (width 0.05))
@@ -1954,14 +1954,14 @@
     (fp_line (start 0.89 1.27) (end 0.89 -1.27) (layer F.SilkS) (width 0.12))
     (fp_line (start 0.89 1.27) (end -0.89 1.27) (layer F.SilkS) (width 0.12))
     (fp_line (start -0.89 -1.27) (end 0.89 -1.27) (layer F.SilkS) (width 0.12))
-    (pad 1 smd rect (at 0 -0.64) (size 1.27 0.97) (layers F.Cu F.Paste F.Mask)
+    (pad 1 smd rect (at 0 -0.64 90) (size 1.27 0.97) (layers F.Cu F.Paste F.Mask)
       (net 7 +BATT))
-    (pad 2 smd rect (at 0 0.64) (size 1.27 0.97) (layers F.Cu F.Paste F.Mask)
+    (pad 2 smd rect (at 0 0.64 90) (size 1.27 0.97) (layers F.Cu F.Paste F.Mask)
       (net 41 "Net-(J16-Pad2)"))
   )
 
   (module Pin_Headers:Pin_Header_Straight_1x01_Pitch2.54mm (layer F.Cu) (tedit 58CD4EC1) (tstamp 58F8C048)
-    (at 102.15 92.25)
+    (at 99.65 87.25)
     (descr "Through hole straight pin header, 1x01, 2.54mm pitch, single row")
     (tags "Through hole pin header THT 1x01 2.54mm single row")
     (path /58F6EF4B)
@@ -2070,7 +2070,7 @@
   )
 
   (module Resistors_SMD:R_0805_HandSoldering (layer F.Cu) (tedit 58E0A804) (tstamp 58F8C05A)
-    (at 110.8 101.9)
+    (at 107.05 100.35)
     (descr "Resistor SMD 0805, hand soldering")
     (tags "resistor 0805")
     (path /58D32FF9)
@@ -2106,7 +2106,7 @@
   )
 
   (module Resistors_SMD:R_0805_HandSoldering (layer F.Cu) (tedit 58FCE1AD) (tstamp 58F8C06C)
-    (at 110.8 96.95 180)
+    (at 107.05 95.4 180)
     (descr "Resistor SMD 0805, hand soldering")
     (tags "resistor 0805")
     (path /58D34DE0)
@@ -2142,7 +2142,7 @@
   )
 
   (module Resistors_SMD:R_0805_HandSoldering (layer F.Cu) (tedit 58FCE32E) (tstamp 58F8C072)
-    (at 114.95 79.3)
+    (at 105.6 83.65)
     (descr "Resistor SMD 0805, hand soldering")
     (tags "resistor 0805")
     (path /58DA3779)
@@ -2178,7 +2178,7 @@
   )
 
   (module Resistors_SMD:R_0805_HandSoldering (layer F.Cu) (tedit 58E0A804) (tstamp 58F8C078)
-    (at 102.7 95.15)
+    (at 100.2 90.45)
     (descr "Resistor SMD 0805, hand soldering")
     (tags "resistor 0805")
     (path /58F6AA90)
@@ -2214,7 +2214,7 @@
   )
 
   (module Resistors_SMD:R_0805_HandSoldering (layer F.Cu) (tedit 58E0A804) (tstamp 58F8C07E)
-    (at 102.7 97.2 180)
+    (at 100.2 92.9 180)
     (descr "Resistor SMD 0805, hand soldering")
     (tags "resistor 0805")
     (path /58F6ABAB)
@@ -2250,7 +2250,7 @@
   )
 
   (module Buttons_Switches_ThroughHole:SW_PUSH_6mm (layer F.Cu) (tedit 58FCE35A) (tstamp 58F8C086)
-    (at 102 108.65)
+    (at 99.85 107.75)
     (descr https://www.omron.com/ecb/products/pdf/en-b3f.pdf)
     (tags "tact sw push 6mm")
     (path /58D316F0)
@@ -2298,7 +2298,7 @@
   )
 
   (module TO_SOT_Packages_SMD:SOT-23-5_HandSoldering (layer F.Cu) (tedit 58CE4E7E) (tstamp 58F8C0D3)
-    (at 139.15 117)
+    (at 138.35 120.3)
     (descr "5-pin SOT23 package")
     (tags "SOT-23-5 hand-soldering")
     (path /58F5E5A9)
@@ -2390,7 +2390,7 @@
   )
 
   (module Housings_DFN_QFN:QFN-24-1EP_4x4mm_Pitch0.5mm (layer F.Cu) (tedit 54130A77) (tstamp 58F8C0FA)
-    (at 116.7 106.9)
+    (at 114.35 106.5)
     (descr "24-Lead Plastic Quad Flat, No Lead Package (MJ) - 4x4x0.9 mm Body [QFN]; (see Microchip Packaging Specification 00000049BS.pdf)")
     (tags "QFN 0.5")
     (path /58D83311)
@@ -2467,7 +2467,7 @@
   )
 
   (module Local_prints:DFN_2x2mm_10pin_0.4pitch (layer F.Cu) (tedit 58F714EC) (tstamp 58F8C108)
-    (at 127.4 113.95)
+    (at 121.8 120.45)
     (path /58F9851D)
     (fp_text reference U5 (at 0.025 -3.125) (layer F.SilkS)
       (effects (font (size 1.2 1.2) (thickness 0.15)))
@@ -2502,7 +2502,7 @@
   )
 
   (module Local_prints:MS5637 (layer F.Cu) (tedit 58FCE07B) (tstamp 58F8C110)
-    (at 133.45 108.75)
+    (at 129.6 112.75)
     (path /58F8A478)
     (fp_text reference U6 (at 0.15 3.05) (layer F.SilkS)
       (effects (font (size 1 1) (thickness 0.15)))
@@ -2734,7 +2734,7 @@
   )
 
   (module Resistors_SMD:R_Array_Convex_4x1206 (layer F.Cu) (tedit 58E0A8BD) (tstamp 58FCB315)
-    (at 139.55 107.6)
+    (at 136.95 111.2)
     (descr "Chip Resistor Network, ROHM MNR34 (see mnr_g.pdf)")
     (tags "resistor array")
     (path /58FD5E70)
