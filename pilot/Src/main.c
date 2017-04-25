@@ -276,33 +276,9 @@ int main(void)
 	
 	while (1)
 	{
-//		value = (value + 10) % 1010;
-//		HAL_Delay(10);
-//		
-//		float motors[4];
-//			
-//		motors[0] = value;
-//		motors[1] = value;
-//		motors[2] = 250;
-//		motors[3] = 500;
-//			
-//		Motors_Set(motors);
-//		
-//		continue;
-		
 		if (_receiver_data_ready)
 		{
 			uint16_t throttle = ((_receiver_data.channels[0] - SBUS_CHANNEL_MIN) / (float)SBUS_CHANENL_RANGE) * 1000.0f;
-//
-//			float motors[4];
-//			
-//			motors[0] = _throttle;
-//			motors[1] = _throttle;
-//			motors[2] = _throttle;
-//			motors[3] = _throttle;
-//			
-//			//if (throttle != _throttle)
-//				Motors_Set(motors);
 			
 			if (throttle > 800)
 				_throttle = 800;

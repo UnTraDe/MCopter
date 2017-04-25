@@ -7,6 +7,8 @@ static TIM_HandleTypeDef* _htim;
 #define PERIOD_RESOLUTION	(PERIOD_MAX - PERIOD_MIN)
 #define MAX_VALUE			1000
 
+// TODO currently using the PWM mode there's a delay from calling start to when the actual signal starts, depends on  ARR - CCRx
+
 void Motors_Init(TIM_HandleTypeDef* htim)
 {
 	_htim = htim;
