@@ -563,4 +563,3 @@ $(BINARYDIR)/stm32f4xx_it.o : ../Src/stm32f4xx_it.c $(all_make_files) |$(BINARYD
 
 $(BINARYDIR)/system_stm32f4xx.o : ../Src/system_stm32f4xx.c $(all_make_files) |$(BINARYDIR)
 	$(CC) $(CFLAGS) -c $< -o $@ -MD -MF $(@:.o=.dep)
-
