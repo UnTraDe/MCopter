@@ -57,6 +57,7 @@ TIM_HandleTypeDef htim1;
 TIM_HandleTypeDef htim5;
 
 UART_HandleTypeDef huart1;
+UART_HandleTypeDef huart6;
 DMA_HandleTypeDef hdma_usart1_rx;
 DMA_HandleTypeDef hdma_usart1_tx;
 
@@ -74,6 +75,7 @@ static void MX_SPI2_Init(void);
 static void MX_TIM1_Init(void);
 static void MX_TIM5_Init(void);
 static void MX_USART1_UART_Init(void);
+static void MX_USART6_UART_Init(void);
 
 void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
                                 
@@ -216,6 +218,7 @@ int main(void)
 	MX_TIM1_Init();
 	MX_TIM5_Init();
 	MX_USART1_UART_Init();
+	MX_USART6_UART_Init();
 
 	  /* USER CODE BEGIN 2 */
 	Motors_Init(&htim5);
@@ -273,38 +276,39 @@ int main(void)
 	
 	while (1)
 	{
-		value = (value + 10) % 1010;
-		HAL_Delay(10);
-		
-		float motors[4];
-			
-		motors[0] = value;
-		motors[1] = value;
-		motors[2] = value;
-		motors[3] = value;
-			
-		Motors_Set(motors);
-		
-		continue;
+//		value = (value + 10) % 1010;
+//		HAL_Delay(10);
+//		
+//		float motors[4];
+//			
+//		motors[0] = value;
+//		motors[1] = value;
+//		motors[2] = 250;
+//		motors[3] = 500;
+//			
+//		Motors_Set(motors);
+//		
+//		continue;
 		
 		if (_receiver_data_ready)
 		{
 			uint16_t throttle = ((_receiver_data.channels[0] - SBUS_CHANNEL_MIN) / (float)SBUS_CHANENL_RANGE) * 1000.0f;
-
+//
+//			float motors[4];
+//			
+//			motors[0] = _throttle;
+//			motors[1] = _throttle;
+//			motors[2] = _throttle;
+//			motors[3] = _throttle;
+//			
+//			//if (throttle != _throttle)
+//				Motors_Set(motors);
+			
 			if (throttle > 800)
 				_throttle = 800;
 			else
 				_throttle = throttle;
 			
-//			float motors[4];
-//			
-//			motors[0] = throttle;
-//			motors[1] = throttle;
-//			motors[2] = throttle;
-//			motors[3] = throttle;
-//			
-//			Motors_Set(motors);
-
 			_target_yaw_rate = ((_receiver_data.channels[3] - SBUS_CHANNEL_MIN) * (_yaw_max_rate / SBUS_CHANENL_RANGE)) - (_yaw_max_rate / 2.0f);
 			_target_pitch = ((_receiver_data.channels[2] - SBUS_CHANNEL_MIN) * (_control_angle / SBUS_CHANENL_RANGE)) - (_control_angle / 2.0f);
 			_target_roll = ((_receiver_data.channels[1] - SBUS_CHANNEL_MIN) * (_control_angle / SBUS_CHANENL_RANGE)) - (_control_angle / 2.0f);
@@ -370,7 +374,7 @@ int main(void)
 			motors[2] = _throttle - output_pitch + output_roll + output_yaw; // Front Right
 			motors[3] = _throttle - output_pitch - output_roll - output_yaw; // Front Left
 			
-			//Motors_Set(motors);
+			Motors_Set(motors);
 		}
 	}
   /* USER CODE END 3 */
@@ -560,9 +564,14 @@ static void MX_TIM5_Init(void)
 	htim5.Instance = TIM5;
 	htim5.Init.Prescaler = 0;
 	htim5.Init.CounterMode = TIM_COUNTERMODE_UP;
-	htim5.Init.Period = 125000;
+	htim5.Init.Period = 12500;
 	htim5.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
 	if (HAL_TIM_PWM_Init(&htim5) != HAL_OK)
+	{
+		Error_Handler();
+	}
+
+	if (HAL_TIM_OnePulse_Init(&htim5, TIM_OPMODE_SINGLE) != HAL_OK)
 	{
 		Error_Handler();
 	}
@@ -576,7 +585,7 @@ static void MX_TIM5_Init(void)
 
 	sConfigOC.OCMode = TIM_OCMODE_PWM1;
 	sConfigOC.Pulse = 0;
-	sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+	sConfigOC.OCPolarity = TIM_OCPOLARITY_LOW;
 	sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
 	if (HAL_TIM_PWM_ConfigChannel(&htim5, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
 	{
@@ -615,6 +624,25 @@ static void MX_USART1_UART_Init(void)
 	huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
 	huart1.Init.OverSampling = UART_OVERSAMPLING_16;
 	if (HAL_UART_Init(&huart1) != HAL_OK)
+	{
+		Error_Handler();
+	}
+
+}
+
+/* USART6 init function */
+static void MX_USART6_UART_Init(void)
+{
+
+	huart6.Instance = USART6;
+	huart6.Init.BaudRate = 115200;
+	huart6.Init.WordLength = UART_WORDLENGTH_8B;
+	huart6.Init.StopBits = UART_STOPBITS_1;
+	huart6.Init.Parity = UART_PARITY_NONE;
+	huart6.Init.Mode = UART_MODE_TX_RX;
+	huart6.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+	huart6.Init.OverSampling = UART_OVERSAMPLING_16;
+	if (HAL_UART_Init(&huart6) != HAL_OK)
 	{
 		Error_Handler();
 	}
@@ -661,7 +689,7 @@ static void MX_GPIO_Init(void)
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
 
 	  /*Configure GPIO pin Output Level */
-	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5 | GPIO_PIN_6, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, GPIO_PIN_RESET);
 
 	  /*Configure GPIO pin Output Level */
 	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_RESET);
@@ -679,8 +707,8 @@ static void MX_GPIO_Init(void)
 	GPIO_InitStruct.Pull = GPIO_NOPULL;
 	HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-	  /*Configure GPIO pins : PC5 PC6 */
-	GPIO_InitStruct.Pin = GPIO_PIN_5 | GPIO_PIN_6;
+	  /*Configure GPIO pin : PC5 */
+	GPIO_InitStruct.Pin = GPIO_PIN_5;
 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
 	GPIO_InitStruct.Pull = GPIO_NOPULL;
 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
