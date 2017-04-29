@@ -269,8 +269,18 @@ int main(void)
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
-		
-	HAL_UART_Receive_DMA(&huart1, _uart_rx_data_buffer, 25);
+	
+	
+	// SBUS is sending every 4 ms, so we wait to synchronize
+	
+	while (1)
+	{
+		if (HAL_TIMEOUT == HAL_UART_Receive(&huart1, _uart_rx_data_buffer, 1, 2))
+		{
+			HAL_UART_Receive_DMA(&huart1, _uart_rx_data_buffer, 25);
+			break;
+		}
+	}
 	
 	int value = 0;
 	
@@ -285,14 +295,14 @@ int main(void)
 			else
 				_throttle = throttle;
 			
-//			float motors[4];
-//			
-//			motors[0] = throttle;
-//			motors[1] = throttle;
-//			motors[2] = throttle;
-//			motors[3] = throttle;
-//			
-//			Motors_Set(motors);
+			float motors[4];
+			
+			motors[0] = throttle;
+			motors[1] = throttle;
+			motors[2] = throttle;
+			motors[3] = throttle;
+			
+			Motors_Set(motors);
 			
 			_target_yaw_rate = ((_receiver_data.channels[3] - SBUS_CHANNEL_MIN) * (_yaw_max_rate / SBUS_CHANENL_RANGE)) - (_yaw_max_rate / 2.0f);
 			_target_pitch = ((_receiver_data.channels[2] - SBUS_CHANNEL_MIN) * (_control_angle / SBUS_CHANENL_RANGE)) - (_control_angle / 2.0f);
