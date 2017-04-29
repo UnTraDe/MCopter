@@ -7,5 +7,6 @@ uint8_t ICM20689_Init(SPI_HandleTypeDef* hspi, GPIO_TypeDef* slave_select_port, 
 void ICM20689_ReadGyro(float* gyro);
 void ICM20689_ReadAccel(float* accel);
 uint8_t ICM20689_DataReady();
+void ICM20689_CalibrateAccelAndGyro(float* gyroscope_bias, float* accelerometer_bias);
 
 #endif

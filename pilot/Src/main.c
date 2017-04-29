@@ -288,8 +288,30 @@ int main(void)
 	
 	uint8_t fail_safe = 1;
 	
+	float acc_cal[3];
+	float gyro_cal[3];
+	ICM20689_CalibrateAccelAndGyro(gyro_cal, acc_cal);
+	
+	uint8_t output[128] = { 0 };
+	sprintf((char*)output, "%f, %f, %f\r\n%f, %f, %f\r\n", acc_cal[0], acc_cal[1], acc_cal[2], gyro_cal[0], gyro_cal[1], gyro_cal[2]);
+	HAL_UART_Transmit(&huart1, output, strlen((char*)output), 100);
+	
+	while (1)
+		;
+	
+	uint32_t now = HAL_GetTick();
+	uint32_t last = now;
+	
+	uint32_t test_timer = 0;
+	
 	while (1)
 	{
+		now = HAL_GetTick();
+		uint32_t dt_ms = now - last;
+		last = now;
+		
+		test_timer += dt_ms;
+		
 		if (_receiver_data_ready)
 		{
 			uint16_t throttle = ((_receiver_data.channels[0] - SBUS_CHANNEL_MIN) / (float)SBUS_CHANENL_RANGE) * 1000.0f;
@@ -316,11 +338,6 @@ int main(void)
 			_target_roll *= -1;
 			
 			fail_safe = _receiver_data.fail_safe;
-			
-			//memset(_uart_tx_data_buffer, 0, sizeof(_uart_tx_data_buffer));
-			//sprintf((char*)_uart_tx_data_buffer, "%d, %d, %d, %d\r\n", _receiver_data.channels[0], _receiver_data.channels[1], _receiver_data.channels[2], _receiver_data.channels[3]);
-			//HAL_UART_Transmit(&huart1, _uart_tx_data_buffer, 32, 100);
-			
 			_receiver_data_ready = 0;
 		}
 		
@@ -351,6 +368,14 @@ int main(void)
 			pitch *= 180.0f / PI;
 			yaw *= 180.0f / PI;
 			roll *= 180.0f / PI;
+			
+			if (test_timer >= 1000)
+			{
+				test_timer = 0;
+				uint8_t output[32] = { 0 };
+				sprintf((char*)output, "%f, %f, %f\r\n", pitch, yaw, roll);
+				HAL_UART_Transmit(&huart1, output, strlen((char*)output), 100);
+			}
 			
 			float dt_ms;
 			
