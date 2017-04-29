@@ -275,6 +275,71 @@ int main(void)
   /* USER CODE BEGIN 3 */
 	
 	
+	
+	
+	//	float acc_cal[3];
+//	float gyro_cal[3];
+//	ICM20689_CalibrateAccelAndGyro(gyro_cal, acc_cal);
+//	
+//	uint8_t output[128] = { 0 };
+//	sprintf((char*)output, "%f, %f, %f\r\n%f, %f, %f\r\n", acc_cal[0], acc_cal[1], acc_cal[2], gyro_cal[0], gyro_cal[1], gyro_cal[2]);
+//	HAL_UART_Transmit(&huart1, output, strlen((char*)output), 100);
+//	
+//	while (1)
+//		;
+	
+	ICM20689_SetGyroFullScaleRange(GFS_250DPS);
+	ICM20689_SetAccelFullScaleRange(AFS_2G);
+	
+	int samples = 0;
+	int32_t avg_gyro[3] = { 0 };
+	int32_t avg_accel[3] = { 0 };
+	
+	while (samples < 400)
+	{
+		if (_imu_data_ready)
+		{
+			_imu_data_ready = 0;
+			
+			int16_t gyro[3];
+			int16_t accel[3];
+			ICM20689_ReadGyroRaw(gyro);
+			ICM20689_ReadAccelRaw(accel);
+			
+			for (int i = 0; i < 3; i++)
+				avg_gyro[i] += gyro[i];
+			
+			for (int i = 0; i < 3; i++)
+				avg_accel[i] += accel[i];
+			
+			samples++;
+		}
+	}
+	
+	float gyro_bias[3];
+	
+	for (int i = 0; i < 3; i++)
+	{
+		avg_gyro[i] /= samples;
+		gyro_bias[i] = (float)avg_gyro[i] * GyroScale[GFS_250DPS];
+	}
+	
+	float accel_bias[3];
+	
+	for (int i = 0; i < 3; i++)
+	{
+		avg_accel[i] /= samples;
+		accel_bias[i] = (float)avg_accel[i] * AccelScale[AFS_2G];
+	}
+	
+	uint8_t output[128] = { 0 };
+	sprintf((char*)output, "%f, %f, %f\r\n%f, %f, %f\r\n", gyro_bias[0], gyro_bias[1], gyro_bias[2], accel_bias[0], accel_bias[1], accel_bias[2]);
+	HAL_UART_Transmit(&huart1, output, strlen((char*)output), 100);
+	
+	while (1)
+		;
+	
+	
 	// SBUS is sending every 4 ms, so we wait to synchronize
 	
 	while (1)
@@ -287,17 +352,6 @@ int main(void)
 	}
 	
 	uint8_t fail_safe = 1;
-	
-	float acc_cal[3];
-	float gyro_cal[3];
-	ICM20689_CalibrateAccelAndGyro(gyro_cal, acc_cal);
-	
-	uint8_t output[128] = { 0 };
-	sprintf((char*)output, "%f, %f, %f\r\n%f, %f, %f\r\n", acc_cal[0], acc_cal[1], acc_cal[2], gyro_cal[0], gyro_cal[1], gyro_cal[2]);
-	HAL_UART_Transmit(&huart1, output, strlen((char*)output), 100);
-	
-	while (1)
-		;
 	
 	uint32_t now = HAL_GetTick();
 	uint32_t last = now;
