@@ -101,6 +101,8 @@ static const float _yaw_max_rate = 120.0f;
 static volatile uint8_t _imu_data_ready = 0;
 static volatile uint16_t _missed_imu_data = 0;
 
+
+
 static float _orientation[4] = { 1.0f, 0.0f, 0.0f, 0.0f }; // Quaternion
 static float _reference_orientation[4] = { 1.0f, 0.0f, 0.0f, 0.0f };
 
@@ -172,6 +174,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart)
 			_receiver_data.channels[13] = (uint16_t)((payload[17] >> 7 | payload[18] << 1 | payload[19] << 9) & 0x07FF);
 			_receiver_data.channels[14] = (uint16_t)((payload[19] >> 2 | payload[20] << 6) & 0x07FF);
 			_receiver_data.channels[15] = (uint16_t)((payload[20] >> 5 | payload[21] << 3) & 0x07FF);
+			
+			_receiver_data.fail_safe = (payload[22] & 0x08);
 		
 			_receiver_data_ready = 1;
 		
@@ -282,7 +286,7 @@ int main(void)
 		}
 	}
 	
-	int value = 0;
+	uint8_t fail_safe = 1;
 	
 	while (1)
 	{
@@ -295,14 +299,14 @@ int main(void)
 			else
 				_throttle = throttle;
 			
-			float motors[4];
-			
-			motors[0] = throttle;
-			motors[1] = throttle;
-			motors[2] = throttle;
-			motors[3] = throttle;
-			
-			Motors_Set(motors);
+//			float motors[4];
+//			
+//			motors[0] = throttle;
+//			motors[1] = throttle;
+//			motors[2] = throttle;
+//			motors[3] = throttle;
+//			
+//			Motors_Set(motors);
 			
 			_target_yaw_rate = ((_receiver_data.channels[3] - SBUS_CHANNEL_MIN) * (_yaw_max_rate / SBUS_CHANENL_RANGE)) - (_yaw_max_rate / 2.0f);
 			_target_pitch = ((_receiver_data.channels[2] - SBUS_CHANNEL_MIN) * (_control_angle / SBUS_CHANENL_RANGE)) - (_control_angle / 2.0f);
@@ -311,11 +315,20 @@ int main(void)
 			_target_yaw_rate *= -1;
 			_target_roll *= -1;
 			
+			fail_safe = _receiver_data.fail_safe;
+			
 			//memset(_uart_tx_data_buffer, 0, sizeof(_uart_tx_data_buffer));
 			//sprintf((char*)_uart_tx_data_buffer, "%d, %d, %d, %d\r\n", _receiver_data.channels[0], _receiver_data.channels[1], _receiver_data.channels[2], _receiver_data.channels[3]);
 			//HAL_UART_Transmit(&huart1, _uart_tx_data_buffer, 32, 100);
 			
 			_receiver_data_ready = 0;
+		}
+		
+		if (fail_safe)
+		{
+			float motors[4] = { 0 };
+			Motors_Set(motors);
+			continue;
 		}
 		
 		if (_imu_data_ready)
@@ -369,14 +382,10 @@ int main(void)
 			motors[2] = _throttle - output_pitch + output_roll + output_yaw; // Front Right
 			motors[3] = _throttle - output_pitch - output_roll - output_yaw; // Front Left
 			
-			motors[0] = 0;
-			motors[1] = 0;
-			motors[2] = 0;
-			motors[3] = _throttle;
-			
-			//Motors_Set(motors);
+			Motors_Set(motors);
 		}
 	}
+	
   /* USER CODE END 3 */
 
 }
