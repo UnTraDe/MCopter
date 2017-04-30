@@ -336,9 +336,20 @@ int main(void)
 	sprintf((char*)output, "%f, %f, %f\r\n%f, %f, %f\r\n", gyro_bias[0], gyro_bias[1], gyro_bias[2], accel_bias[0], accel_bias[1], accel_bias[2]);
 	HAL_UART_Transmit(&huart1, output, strlen((char*)output), 100);
 	
-	while (1)
-		;
 	
+	gyro_bias[0] *= -1;
+	gyro_bias[1] *= -1;
+	gyro_bias[2] *= -1;
+	ICM20689_SetLocalGyroBias(gyro_bias);
+	
+	accel_bias[0] *= -1;
+	accel_bias[1] *= -1;
+	accel_bias[2] -= 1;
+	accel_bias[2] *= -1;
+	ICM20689_SetLocalAccelBias(accel_bias);
+	
+	ICM20689_SetGyroFullScaleRange(GFS_2000DPS);
+	ICM20689_SetAccelFullScaleRange(AFS_16G);
 	
 	// SBUS is sending every 4 ms, so we wait to synchronize
 	
@@ -399,7 +410,7 @@ int main(void)
 		{
 			float motors[4] = { 0 };
 			Motors_Set(motors);
-			continue;
+			//continue;
 		}
 		
 		if (_imu_data_ready)
@@ -427,7 +438,7 @@ int main(void)
 			{
 				test_timer = 0;
 				uint8_t output[32] = { 0 };
-				sprintf((char*)output, "%f, %f, %f\r\n", pitch, yaw, roll);
+				sprintf((char*)output, "%f, %f, %f\r\n", accel[0], accel[1], accel[2]);
 				HAL_UART_Transmit(&huart1, output, strlen((char*)output), 100);
 			}
 			

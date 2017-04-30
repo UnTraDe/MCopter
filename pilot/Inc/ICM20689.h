@@ -30,5 +30,7 @@ void ICM20689_ReadAccelRaw(int16_t* accel);
 uint8_t ICM20689_DataReady();
 void ICM20689_SetGyroFullScaleRange(GyroFullScaleRange fsr);
 void ICM20689_SetAccelFullScaleRange(AccelFullScaleRange fsr);
+void ICM20689_SetLocalGyroBias(float* bias);
+void ICM20689_SetLocalAccelBias(float* bias);
 
 #endif

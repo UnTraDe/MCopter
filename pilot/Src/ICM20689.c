@@ -78,6 +78,9 @@ float AccelScale[4] =
 static GyroFullScaleRange _gyro_range = GFS_2000DPS;
 static AccelFullScaleRange _accel_range = AFS_16G;
 
+static float _gyro_bias[3] = { 0 };
+static float _accel_bias[3] = { 0 };
+
 uint8_t ICM20689_Init(SPI_HandleTypeDef* hspi, GPIO_TypeDef* slave_select_port, uint16_t slave_select_pin)
 {
 	_hspi = hspi;
@@ -154,9 +157,9 @@ void ICM20689_ReadGyro(float* gyro)
 	uint8_t data[6];
 	ReadMultipleRegister(REG_GYRO_XOUT_H, data, 6);
 
-	gyro[0] = (int16_t)((data[0] << 8) | data[1]) * GyroScale[_gyro_range];
-	gyro[1] = (int16_t)((data[2] << 8) | data[3]) * GyroScale[_gyro_range];
-	gyro[2] = (int16_t)((data[4] << 8) | data[5]) * GyroScale[_gyro_range];
+	gyro[0] = (int16_t)((data[0] << 8) | data[1]) * GyroScale[_gyro_range] + _gyro_bias[0];
+	gyro[1] = (int16_t)((data[2] << 8) | data[3]) * GyroScale[_gyro_range] + _gyro_bias[1];
+	gyro[2] = (int16_t)((data[4] << 8) | data[5]) * GyroScale[_gyro_range] + _gyro_bias[2];
 }
 
 void ICM20689_ReadGyroRaw(int16_t* gyro)
@@ -174,9 +177,9 @@ void ICM20689_ReadAccel(float* accel)
 	uint8_t data[6];
 	ReadMultipleRegister(REG_ACCEL_XOUT_H, data, 6);
 
-	accel[0] = (int16_t)((data[0] << 8) | data[1]) * AccelScale[_accel_range];
-	accel[1] = (int16_t)((data[2] << 8) | data[3]) * AccelScale[_accel_range];
-	accel[2] = (int16_t)((data[4] << 8) | data[5]) * AccelScale[_accel_range];
+	accel[0] = (int16_t)((data[0] << 8) | data[1]) * AccelScale[_accel_range] + _accel_bias[0];
+	accel[1] = (int16_t)((data[2] << 8) | data[3]) * AccelScale[_accel_range] + _accel_bias[1];
+	accel[2] = (int16_t)((data[4] << 8) | data[5]) * AccelScale[_accel_range] + _accel_bias[2];
 }
 
 void ICM20689_ReadAccelRaw(int16_t* accel)
@@ -208,6 +211,18 @@ void ICM20689_SetAccelFullScaleRange(AccelFullScaleRange fsr)
 	accel_cfg = (accel_cfg & 0xE7) | (fsr << 3);
 	WriteRegister(REG_ACCEL_CONFIG, accel_cfg);
 	_accel_range = fsr;
+}
+
+void ICM20689_SetLocalGyroBias(float* bias)
+{
+	for (int i = 0; i < 3; i++)
+		_gyro_bias[i] = bias[i];
+}
+
+void ICM20689_SetLocalAccelBias(float* bias)
+{
+	for (int i = 0; i < 3; i++)
+		_accel_bias[i] = bias[i];
 }
 
 void WriteRegister(uint8_t reg, uint8_t data)
