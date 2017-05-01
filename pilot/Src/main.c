@@ -85,17 +85,17 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 /* USER CODE BEGIN 0 */
 
 static const float Kp = 3.0f;
-static const float Ki = 0.08f;
+static const float Ki = 0.0f; //0.08f;
 static const float Kd = 10.0f;
-static const float i_limit = 100.0f;
+static const float i_limit = 40.0f;
 
 static const float Kp_yaw = 8.0f;
-static const float Ki_yaw = 0.4f;
+static const float Ki_yaw = 0.0f; //0.4f;
 static const float Kd_yaw = 0.0f;
 static const float i_limit_yaw = 40.0f;
 
 static const float _control_angle = 30.0f;
-static const float _yaw_max_rate = 120.0f;
+static const float _yaw_max_rate = 60.0f;
 
 static volatile uint8_t _imu_data_ready = 0;
 static volatile uint16_t _missed_imu_data = 0;
@@ -301,6 +301,9 @@ int main(void)
 	uint32_t last = now;
 	
 	uint32_t test_timer = 0;
+	uint32_t hz_timer = 0;
+	
+	uint32_t hz_counter = 0;
 	
 	while (1)
 	{
@@ -309,6 +312,7 @@ int main(void)
 		last = now;
 		
 		test_timer += dt_ms;
+		hz_timer += dt_ms;
 		
 		if (_receiver_data_ready)
 		{
@@ -319,14 +323,37 @@ int main(void)
 			else
 				_throttle = throttle;
 			
+//			
+//			if (throttle > 500)
+//				throttle = 1000;
+//			else
+//				throttle = 0;
+//			
+//			float motors[4];
+//			
+//			motors[0] = throttle; // Back Right
+//			motors[1] = throttle; // Back Left
+//			motors[2] = throttle; // Front Right
+//			motors[3] = throttle; // Front Left
+//
+//			Motors_Set(motors);
+			
 			_target_yaw_rate = ((_receiver_data.channels[3] - SBUS_CHANNEL_MIN) * (_yaw_max_rate / SBUS_CHANENL_RANGE)) - (_yaw_max_rate / 2.0f);
 			_target_pitch = ((_receiver_data.channels[2] - SBUS_CHANNEL_MIN) * (_control_angle / SBUS_CHANENL_RANGE)) - (_control_angle / 2.0f);
 			_target_roll = ((_receiver_data.channels[1] - SBUS_CHANNEL_MIN) * (_control_angle / SBUS_CHANENL_RANGE)) - (_control_angle / 2.0f);
 
 			_target_yaw_rate *= -1;
-			_target_roll *= -1;
 			
 			fail_safe = _receiver_data.fail_safe;
+			
+//			if (test_timer >= 10)
+//			{
+//				test_timer = 0;
+//				uint8_t output[32] = { 0 };
+//				sprintf((char*)output, "%f, %f, %f\r\n", _target_pitch, _target_yaw_rate, _target_roll);
+//				HAL_UART_Transmit(&huart6, output, strlen((char*)output), 100);
+//			}
+			
 			_receiver_data_ready = 0;
 		}
 		
@@ -346,7 +373,18 @@ int main(void)
 			ICM20689_ReadGyro(gyro);
 			ICM20689_ReadAccel(accel);
 			
-			AxisFusion_MahonyAHRSupdateIMU(_orientation, gyro[0]*PI / 180.0f, -gyro[1]*PI / 180.0f, -gyro[2]*PI / 180.0f, -accel[0], accel[1], accel[2]);
+//			hz_counter++;
+//			
+//			if (hz_timer >= 1000)
+//			{
+//				hz_timer = 0;
+//				uint8_t output[16] = { 0 };
+//				sprintf((char*)output, "%d\r\n", counter);
+//				counter = 0;
+//				HAL_UART_Transmit(&huart6, output, strlen((char*)output), 100);
+//			}
+//			
+			AxisFusion_MahonyAHRSupdateIMU(_orientation, gyro[0]*PI / 180.0f, gyro[1]*PI / 180.0f, gyro[2]*PI / 180.0f, accel[0], accel[1], accel[2]);
 		
 			float quat[4];
 			Quaternion_Multiply(_reference_orientation, _orientation, quat);
@@ -358,19 +396,19 @@ int main(void)
 			yaw *= 180.0f / PI;
 			roll *= 180.0f / PI;
 			
-			if (test_timer >= 1000)
-			{
-				test_timer = 0;
-				uint8_t output[32] = { 0 };
-				sprintf((char*)output, "%f, %f, %f\r\n", accel[0], accel[1], accel[2]);
-				HAL_UART_Transmit(&huart6, output, strlen((char*)output), 100);
-			}
+			float t = pitch;
+			pitch = -roll;
+			roll = t;
+			
+//			if (test_timer >= 100)
+//			{
+//				test_timer = 0;
+//				uint8_t output[32] = { 0 };
+//				sprintf((char*)output, "%f, %f, %f\r\n", pitch, yaw, roll);
+//				HAL_UART_Transmit(&huart6, output, strlen((char*)output), 100);
+//			}
 			
 			float dt_ms;
-			
-			float target_pitch = 0.0f;
-			float target_roll = 0.0f;
-			float target_yaw_rate = 0.0f;
 			
 			float output_pitch = 0.0f;
 			float output_roll = 0.0f;
@@ -378,9 +416,9 @@ int main(void)
 
 			if (_throttle >= 150)
 			{
-				output_pitch = PID_Compute(&_pid_pitch, target_pitch, pitch, dt_ms);
-				output_roll = PID_Compute(&_pid_roll, target_roll, roll, dt_ms);
-				output_yaw = -PID_Compute(&_pid_yaw, target_yaw_rate, gyro[2] * (PI / 180.0f), dt_ms);
+				output_pitch = PID_Compute(&_pid_pitch, _target_pitch, pitch, dt_ms);
+				output_roll = PID_Compute(&_pid_roll, _target_roll, roll, dt_ms);
+				output_yaw = PID_Compute(&_pid_yaw, _target_yaw_rate, gyro[2] * (PI / 180.0f), dt_ms);
 			}
 			else
 			{
@@ -391,11 +429,29 @@ int main(void)
 	
 			float motors[4];
 			
-			motors[0] = _throttle + output_pitch + output_roll - output_yaw; // Back Right
-			motors[1] = _throttle + output_pitch - output_roll + output_yaw; // Back Left
-			motors[2] = _throttle - output_pitch + output_roll + output_yaw; // Front Right
-			motors[3] = _throttle - output_pitch - output_roll - output_yaw; // Front Left
+			motors[0] = _throttle + output_pitch - output_roll - output_yaw; // Back Right
+			motors[1] = _throttle + output_pitch + output_roll + output_yaw; // Back Left
+			motors[2] = _throttle - output_pitch - output_roll + output_yaw; // Front Right
+			motors[3] = _throttle - output_pitch + output_roll - output_yaw; // Front Left
 			
+			_throttle = 500;
+			
+			if (test_timer >= 10)
+			{
+				test_timer = 0;
+				uint8_t output[64] = { 0 };
+				sprintf((char*)output, "%f, %f, %f\n", output_pitch, output_roll, output_yaw);
+				HAL_UART_Transmit(&huart6, output, strlen((char*)output), 1000);
+			}
+			
+//			if (test_timer >= 10)
+//			{
+//				test_timer = 0;
+//				uint8_t output[64] = { 0 };
+//				sprintf((char*)output, "%f, %f, %f, %f\n", motors[0], motors[1], motors[2], motors[3]);
+//				HAL_UART_Transmit(&huart6, output, strlen((char*)output), 1000);
+//			}
+//			
 			Motors_Set(motors);
 		}
 	}
