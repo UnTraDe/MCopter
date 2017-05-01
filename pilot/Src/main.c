@@ -176,14 +176,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart)
 			_receiver_data.fail_safe = (payload[22] & 0x08);
 		
 			_receiver_data_ready = 1;
-		
-			//for (int i = 0; i < 32; i++)
-				//_uart_tx_data_buffer[i] = 0;
-		
-		//sprintf((char*)_uart_tx_data_buffer, "%d, %d, %d, %d\r\n", channels[0], channels[1], channels[2], channels[3]);
-		
-		//HAL_UART_Transmit_DMA(&huart1, _uart_tx_data_buffer, 32);	
-		//HAL_UART_Transmit(&huart1, _uart_tx_data_buffer, 32, 4);
 		}
 	}
 	else
