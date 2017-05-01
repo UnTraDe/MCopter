@@ -32,16 +32,13 @@
 #define REG_PWR_MGMT_2		0x6C
 #define REG_WHO_AM_I		0x75
 
-#define REG_FIFO_EN         0x23
-#define REG_I2C_MST_CTRL    0x24
-#define REG_FIFO_COUNTH     0x72
-#define REG_FIFO_R_W        0x74
 #define REG_XG_OFFSET_H     0x13
 #define REG_XG_OFFSET_L     0x14
 #define REG_YG_OFFSET_H     0x15
 #define REG_YG_OFFSET_L     0x16
 #define REG_ZG_OFFSET_H     0x17
 #define REG_ZG_OFFSET_L     0x18
+
 #define REG_XA_OFFSET_H     0x77
 #define REG_XA_OFFSET_L     0x78
 #define REG_YA_OFFSET_H     0x7A
