@@ -186,7 +186,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart)
 	HAL_UART_Receive_DMA(&huart1, _uart_rx_data_buffer, 25);
 }
 
-static void Calibrate();
+static void CalculateBias(float* gyro_bias, float* accel_bias);
 
 /* USER CODE END 0 */
 
@@ -266,7 +266,24 @@ int main(void)
   /* USER CODE BEGIN 3 */
 	
 	
-	Calibrate();
+	float gyro_bias[3];
+	float accel_bias[3];
+	CalculateBias(gyro_bias, accel_bias);
+	
+	uint8_t output[128] = { 0 };
+	sprintf((char*)output, "%f, %f, %f\r\n%f, %f, %f\r\n", gyro_bias[0], gyro_bias[1], gyro_bias[2], accel_bias[0], accel_bias[1], accel_bias[2]);
+	HAL_UART_Transmit(&huart6, output, strlen((char*)output), 100);
+	
+	gyro_bias[0] *= -1;
+	gyro_bias[1] *= -1;
+	gyro_bias[2] *= -1;
+	ICM20689_SetLocalGyroBias(gyro_bias);
+	
+	accel_bias[0] *= -1;
+	accel_bias[1] *= -1;
+	accel_bias[2] -= 1;
+	accel_bias[2] *= -1;
+	ICM20689_SetLocalAccelBias(accel_bias);
 	
 	// SBUS is sending every 4 ms, so we wait to synchronize
 	
@@ -728,7 +745,7 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 
-static void Calibrate()
+static void CalculateBias(float* gyro_bias, float* accel_bias)
 {
 	ICM20689_SetGyroFullScaleRange(GFS_250DPS);
 	ICM20689_SetAccelFullScaleRange(AFS_2G);
@@ -758,36 +775,17 @@ static void Calibrate()
 		}
 	}
 	
-	float gyro_bias[3];
-	
 	for (int i = 0; i < 3; i++)
 	{
 		avg_gyro[i] /= samples;
 		gyro_bias[i] = (float)avg_gyro[i] * GyroScale[GFS_250DPS];
 	}
 	
-	float accel_bias[3];
-	
 	for (int i = 0; i < 3; i++)
 	{
 		avg_accel[i] /= samples;
 		accel_bias[i] = (float)avg_accel[i] * AccelScale[AFS_2G];
 	}
-	
-	uint8_t output[128] = { 0 };
-	sprintf((char*)output, "%f, %f, %f\r\n%f, %f, %f\r\n", gyro_bias[0], gyro_bias[1], gyro_bias[2], accel_bias[0], accel_bias[1], accel_bias[2]);
-	HAL_UART_Transmit(&huart6, output, strlen((char*)output), 100);
-	
-	gyro_bias[0] *= -1;
-	gyro_bias[1] *= -1;
-	gyro_bias[2] *= -1;
-	ICM20689_SetLocalGyroBias(gyro_bias);
-	
-	accel_bias[0] *= -1;
-	accel_bias[1] *= -1;
-	accel_bias[2] -= 1;
-	accel_bias[2] *= -1;
-	ICM20689_SetLocalAccelBias(accel_bias);
 	
 	ICM20689_SetGyroFullScaleRange(GFS_2000DPS);
 	ICM20689_SetAccelFullScaleRange(AFS_16G);
