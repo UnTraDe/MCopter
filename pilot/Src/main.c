@@ -59,7 +59,6 @@ TIM_HandleTypeDef htim5;
 UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart6;
 DMA_HandleTypeDef hdma_usart1_rx;
-DMA_HandleTypeDef hdma_usart1_tx;
 
 /* USER CODE BEGIN PV */
 /* USER CODE END PV */
@@ -271,14 +270,14 @@ int main(void)
 	
 	// SBUS is sending every 4 ms, so we wait to synchronize
 	
-	while (1)
-	{
-		if (HAL_TIMEOUT == HAL_UART_Receive(&huart1, _uart_rx_data_buffer, 1, 2))
-		{
-			HAL_UART_Receive_DMA(&huart1, _uart_rx_data_buffer, 25);
-			break;
-		}
-	}
+//	while (1)
+//	{
+//		if (HAL_TIMEOUT == HAL_UART_Receive(&huart1, _uart_rx_data_buffer, 1, 2))
+//		{
+//			HAL_UART_Receive_DMA(&huart1, _uart_rx_data_buffer, 25);
+//			break;
+//		}
+//	}
 	
 	uint8_t fail_safe = 1;
 	
@@ -303,15 +302,6 @@ int main(void)
 				_throttle = 800;
 			else
 				_throttle = throttle;
-			
-//			float motors[4];
-//			
-//			motors[0] = throttle;
-//			motors[1] = throttle;
-//			motors[2] = throttle;
-//			motors[3] = throttle;
-//			
-//			Motors_Set(motors);
 			
 			_target_yaw_rate = ((_receiver_data.channels[3] - SBUS_CHANNEL_MIN) * (_yaw_max_rate / SBUS_CHANENL_RANGE)) - (_yaw_max_rate / 2.0f);
 			_target_pitch = ((_receiver_data.channels[2] - SBUS_CHANNEL_MIN) * (_control_angle / SBUS_CHANENL_RANGE)) - (_control_angle / 2.0f);
@@ -632,7 +622,7 @@ static void MX_USART1_UART_Init(void)
 	huart1.Init.WordLength = UART_WORDLENGTH_9B;
 	huart1.Init.StopBits = UART_STOPBITS_2;
 	huart1.Init.Parity = UART_PARITY_EVEN;
-	huart1.Init.Mode = UART_MODE_TX_RX;
+	huart1.Init.Mode = UART_MODE_RX;
 	huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
 	huart1.Init.OverSampling = UART_OVERSAMPLING_16;
 	if (HAL_UART_Init(&huart1) != HAL_OK)
@@ -673,9 +663,6 @@ static void MX_DMA_Init(void)
 	  /* DMA2_Stream2_IRQn interrupt configuration */
 	HAL_NVIC_SetPriority(DMA2_Stream2_IRQn, 0, 0);
 	HAL_NVIC_EnableIRQ(DMA2_Stream2_IRQn);
-	/* DMA2_Stream7_IRQn interrupt configuration */
-	HAL_NVIC_SetPriority(DMA2_Stream7_IRQn, 0, 0);
-	HAL_NVIC_EnableIRQ(DMA2_Stream7_IRQn);
 
 }
 
@@ -789,7 +776,7 @@ static void Calibrate()
 	
 	uint8_t output[128] = { 0 };
 	sprintf((char*)output, "%f, %f, %f\r\n%f, %f, %f\r\n", gyro_bias[0], gyro_bias[1], gyro_bias[2], accel_bias[0], accel_bias[1], accel_bias[2]);
-	HAL_StatusTypeDef status = HAL_UART_Transmit(&huart6, output, strlen((char*)output), 100);
+	HAL_UART_Transmit(&huart6, output, strlen((char*)output), 100);
 	
 	gyro_bias[0] *= -1;
 	gyro_bias[1] *= -1;
