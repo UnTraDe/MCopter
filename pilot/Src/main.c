@@ -270,14 +270,14 @@ int main(void)
 	
 	// SBUS is sending every 4 ms, so we wait to synchronize
 	
-//	while (1)
-//	{
-//		if (HAL_TIMEOUT == HAL_UART_Receive(&huart1, _uart_rx_data_buffer, 1, 2))
-//		{
-//			HAL_UART_Receive_DMA(&huart1, _uart_rx_data_buffer, 25);
-//			break;
-//		}
-//	}
+	while (1)
+	{
+		if (HAL_TIMEOUT == HAL_UART_Receive(&huart1, _uart_rx_data_buffer, 1, 2))
+		{
+			HAL_UART_Receive_DMA(&huart1, _uart_rx_data_buffer, 25);
+			break;
+		}
+	}
 	
 	uint8_t fail_safe = 1;
 	
