@@ -334,7 +334,8 @@ int main(void)
 	
 	uint8_t output[128] = { 0 };
 	sprintf((char*)output, "%f, %f, %f\r\n%f, %f, %f\r\n", gyro_bias[0], gyro_bias[1], gyro_bias[2], accel_bias[0], accel_bias[1], accel_bias[2]);
-	HAL_UART_Transmit(&huart1, output, strlen((char*)output), 100);
+	HAL_StatusTypeDef status = HAL_UART_Transmit(&huart6, output, strlen((char*)output), 100);
+	
 	
 	
 	gyro_bias[0] *= -1;
@@ -439,7 +440,7 @@ int main(void)
 				test_timer = 0;
 				uint8_t output[32] = { 0 };
 				sprintf((char*)output, "%f, %f, %f\r\n", accel[0], accel[1], accel[2]);
-				HAL_UART_Transmit(&huart1, output, strlen((char*)output), 100);
+				HAL_UART_Transmit(&huart6, output, strlen((char*)output), 100);
 			}
 			
 			float dt_ms;
@@ -733,7 +734,7 @@ static void MX_USART6_UART_Init(void)
 	huart6.Init.WordLength = UART_WORDLENGTH_8B;
 	huart6.Init.StopBits = UART_STOPBITS_1;
 	huart6.Init.Parity = UART_PARITY_NONE;
-	huart6.Init.Mode = UART_MODE_TX_RX;
+	huart6.Init.Mode = UART_MODE_TX;
 	huart6.Init.HwFlowCtl = UART_HWCONTROL_NONE;
 	huart6.Init.OverSampling = UART_OVERSAMPLING_16;
 	if (HAL_UART_Init(&huart6) != HAL_OK)
