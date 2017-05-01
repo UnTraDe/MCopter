@@ -101,8 +101,6 @@ static const float _yaw_max_rate = 120.0f;
 static volatile uint8_t _imu_data_ready = 0;
 static volatile uint16_t _missed_imu_data = 0;
 
-
-
 static float _orientation[4] = { 1.0f, 0.0f, 0.0f, 0.0f }; // Quaternion
 static float _reference_orientation[4] = { 1.0f, 0.0f, 0.0f, 0.0f };
 
@@ -197,6 +195,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart)
 	HAL_UART_Receive_DMA(&huart1, _uart_rx_data_buffer, 25);
 }
 
+static void Calibrate();
+
 /* USER CODE END 0 */
 
 int main(void)
@@ -275,82 +275,7 @@ int main(void)
   /* USER CODE BEGIN 3 */
 	
 	
-	
-	
-	//	float acc_cal[3];
-//	float gyro_cal[3];
-//	ICM20689_CalibrateAccelAndGyro(gyro_cal, acc_cal);
-//	
-//	uint8_t output[128] = { 0 };
-//	sprintf((char*)output, "%f, %f, %f\r\n%f, %f, %f\r\n", acc_cal[0], acc_cal[1], acc_cal[2], gyro_cal[0], gyro_cal[1], gyro_cal[2]);
-//	HAL_UART_Transmit(&huart1, output, strlen((char*)output), 100);
-//	
-//	while (1)
-//		;
-	
-	ICM20689_SetGyroFullScaleRange(GFS_250DPS);
-	ICM20689_SetAccelFullScaleRange(AFS_2G);
-	
-	int samples = 0;
-	int32_t avg_gyro[3] = { 0 };
-	int32_t avg_accel[3] = { 0 };
-	
-	while (samples < 400)
-	{
-		if (_imu_data_ready)
-		{
-			_imu_data_ready = 0;
-			
-			int16_t gyro[3];
-			int16_t accel[3];
-			ICM20689_ReadGyroRaw(gyro);
-			ICM20689_ReadAccelRaw(accel);
-			
-			for (int i = 0; i < 3; i++)
-				avg_gyro[i] += gyro[i];
-			
-			for (int i = 0; i < 3; i++)
-				avg_accel[i] += accel[i];
-			
-			samples++;
-		}
-	}
-	
-	float gyro_bias[3];
-	
-	for (int i = 0; i < 3; i++)
-	{
-		avg_gyro[i] /= samples;
-		gyro_bias[i] = (float)avg_gyro[i] * GyroScale[GFS_250DPS];
-	}
-	
-	float accel_bias[3];
-	
-	for (int i = 0; i < 3; i++)
-	{
-		avg_accel[i] /= samples;
-		accel_bias[i] = (float)avg_accel[i] * AccelScale[AFS_2G];
-	}
-	
-	uint8_t output[128] = { 0 };
-	sprintf((char*)output, "%f, %f, %f\r\n%f, %f, %f\r\n", gyro_bias[0], gyro_bias[1], gyro_bias[2], accel_bias[0], accel_bias[1], accel_bias[2]);
-	HAL_StatusTypeDef status = HAL_UART_Transmit(&huart6, output, strlen((char*)output), 100);
-	
-	
-	
-	gyro_bias[0] *= -1;
-	gyro_bias[1] *= -1;
-	gyro_bias[2] *= -1;
-	ICM20689_SetLocalGyroBias(gyro_bias);
-	
-	accel_bias[0] *= -1;
-	accel_bias[1] *= -1;
-	accel_bias[2] -= 1;
-	accel_bias[2] *= -1;
-	ICM20689_SetLocalAccelBias(accel_bias);
-	
-	ICM20689_SetGyroFullScaleRange(GFS_2000DPS);
-	ICM20689_SetAccelFullScaleRange(AFS_16G);
+	Calibrate();
 	
 	// SBUS is sending every 4 ms, so we wait to synchronize
 	
@@ -823,6 +748,72 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+
+static void Calibrate()
+{
+	ICM20689_SetGyroFullScaleRange(GFS_250DPS);
+	ICM20689_SetAccelFullScaleRange(AFS_2G);
+	
+	int samples = 0;
+	int32_t avg_gyro[3] = { 0 };
+	int32_t avg_accel[3] = { 0 };
+	
+	while (samples < 400)
+	{
+		if (_imu_data_ready)
+		{
+			_imu_data_ready = 0;
+			
+			int16_t gyro[3];
+			int16_t accel[3];
+			ICM20689_ReadGyroRaw(gyro);
+			ICM20689_ReadAccelRaw(accel);
+			
+			for (int i = 0; i < 3; i++)
+				avg_gyro[i] += gyro[i];
+			
+			for (int i = 0; i < 3; i++)
+				avg_accel[i] += accel[i];
+			
+			samples++;
+		}
+	}
+	
+	float gyro_bias[3];
+	
+	for (int i = 0; i < 3; i++)
+	{
+		avg_gyro[i] /= samples;
+		gyro_bias[i] = (float)avg_gyro[i] * GyroScale[GFS_250DPS];
+	}
+	
+	float accel_bias[3];
+	
+	for (int i = 0; i < 3; i++)
+	{
+		avg_accel[i] /= samples;
+		accel_bias[i] = (float)avg_accel[i] * AccelScale[AFS_2G];
+	}
+	
+	uint8_t output[128] = { 0 };
+	sprintf((char*)output, "%f, %f, %f\r\n%f, %f, %f\r\n", gyro_bias[0], gyro_bias[1], gyro_bias[2], accel_bias[0], accel_bias[1], accel_bias[2]);
+	HAL_StatusTypeDef status = HAL_UART_Transmit(&huart6, output, strlen((char*)output), 100);
+	
+	gyro_bias[0] *= -1;
+	gyro_bias[1] *= -1;
+	gyro_bias[2] *= -1;
+	ICM20689_SetLocalGyroBias(gyro_bias);
+	
+	accel_bias[0] *= -1;
+	accel_bias[1] *= -1;
+	accel_bias[2] -= 1;
+	accel_bias[2] *= -1;
+	ICM20689_SetLocalAccelBias(accel_bias);
+	
+	ICM20689_SetGyroFullScaleRange(GFS_2000DPS);
+	ICM20689_SetAccelFullScaleRange(AFS_16G);
+}
+
 /* USER CODE END 4 */
 
 /**
