@@ -266,13 +266,13 @@ int main(void)
   /* USER CODE BEGIN 3 */
 	
 	
-	float gyro_bias[3];
-	float accel_bias[3];
-	CalculateBias(gyro_bias, accel_bias);
+	float gyro_bias[3] = { -1.228333, 2.250671, 0.083923 };
+	float accel_bias[3] = { 0.005554, -0.005920, 0.026794 };
+	//CalculateBias(gyro_bias, accel_bias);
 	
-	uint8_t output[128] = { 0 };
-	sprintf((char*)output, "%f, %f, %f\r\n%f, %f, %f\r\n", gyro_bias[0], gyro_bias[1], gyro_bias[2], accel_bias[0], accel_bias[1], accel_bias[2]);
-	HAL_UART_Transmit(&huart6, output, strlen((char*)output), 100);
+//	uint8_t output[128] = { 0 };
+//	sprintf((char*)output, "%f, %f, %f\r\n%f, %f, %f\r\n", gyro_bias[0], gyro_bias[1], gyro_bias[2], accel_bias[0], accel_bias[1], accel_bias[2]);
+//	HAL_UART_Transmit(&huart6, output, strlen((char*)output), 100);
 	
 	gyro_bias[0] *= -1;
 	gyro_bias[1] *= -1;
@@ -281,7 +281,6 @@ int main(void)
 	
 	accel_bias[0] *= -1;
 	accel_bias[1] *= -1;
-	accel_bias[2] -= 1;
 	accel_bias[2] *= -1;
 	ICM20689_SetLocalAccelBias(accel_bias);
 	
@@ -786,6 +785,8 @@ static void CalculateBias(float* gyro_bias, float* accel_bias)
 		avg_accel[i] /= samples;
 		accel_bias[i] = (float)avg_accel[i] * AccelScale[AFS_2G];
 	}
+	
+	accel_bias[2] -= 1.0f;
 	
 	ICM20689_SetGyroFullScaleRange(GFS_2000DPS);
 	ICM20689_SetAccelFullScaleRange(AFS_16G);
