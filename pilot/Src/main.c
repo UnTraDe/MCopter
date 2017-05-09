@@ -308,9 +308,11 @@ int main(void)
 	
 	uint32_t hz_counter = 0;
 	
-	uint8_t reset = 0x1E;
 	
-	if (HAL_I2C_Master_Transmit(&hi2c2, 0b11101100, &reset, 1, 100) != HAL_OK)
+	// Barometer test
+	
+	uint8_t cmd = 0x1E;
+	if (HAL_I2C_Master_Transmit(&hi2c2, 0b11101100, &cmd, 1, 100) != HAL_OK)
 	{
 		while (1)
 		{
@@ -319,10 +321,17 @@ int main(void)
 		}
 	}
 	
-	uint8_t cmd = 0xA0;
+	cmd = 0xA0;
 	HAL_I2C_Master_Transmit(&hi2c2, 0b11101100, &cmd, 1, 100);
 	uint16_t data = 0;
 	HAL_I2C_Master_Receive(&hi2c2, 0b11101101, (uint8_t*)&data, 2, 100);
+	
+	// Magnetometer test
+	
+	cmd = 0x07;
+	HAL_I2C_Master_Transmit(&hi2c2, 0x0E << 1, &cmd, 1, 100);
+	uint8_t id = 0;
+	HAL_I2C_Master_Receive(&hi2c2, (0x0E << 1) | 0x01, (uint8_t*)&id, 1, 100);
 	
 	while (1)
 	{
