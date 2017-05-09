@@ -49,6 +49,7 @@
 
 /* Private variables ---------------------------------------------------------*/
 I2C_HandleTypeDef hi2c1;
+I2C_HandleTypeDef hi2c2;
 
 SPI_HandleTypeDef hspi1;
 SPI_HandleTypeDef hspi2;
@@ -75,6 +76,7 @@ static void MX_TIM1_Init(void);
 static void MX_TIM5_Init(void);
 static void MX_USART1_UART_Init(void);
 static void MX_USART6_UART_Init(void);
+static void MX_I2C2_Init(void);
 
 void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
                                 
@@ -214,6 +216,7 @@ int main(void)
 	MX_TIM5_Init();
 	MX_USART1_UART_Init();
 	MX_USART6_UART_Init();
+	MX_I2C2_Init();
 
 	  /* USER CODE BEGIN 2 */
 	Motors_Init(&htim5);
@@ -304,6 +307,22 @@ int main(void)
 	uint32_t hz_timer = 0;
 	
 	uint32_t hz_counter = 0;
+	
+	uint8_t reset = 0x1E;
+	
+	if (HAL_I2C_Master_Transmit(&hi2c2, 0b11101100, &reset, 1, 100) != HAL_OK)
+	{
+		while (1)
+		{
+			HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_5);
+			HAL_Delay(500);
+		}
+	}
+	
+	uint8_t cmd = 0xA0;
+	HAL_I2C_Master_Transmit(&hi2c2, 0b11101100, &cmd, 1, 100);
+	uint16_t data = 0;
+	HAL_I2C_Master_Receive(&hi2c2, 0b11101101, (uint8_t*)&data, 2, 100);
 	
 	while (1)
 	{
@@ -530,6 +549,26 @@ static void MX_I2C1_Init(void)
 	hi2c1.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
 	hi2c1.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
 	if (HAL_I2C_Init(&hi2c1) != HAL_OK)
+	{
+		Error_Handler();
+	}
+
+}
+
+/* I2C2 init function */
+static void MX_I2C2_Init(void)
+{
+
+	hi2c2.Instance = I2C2;
+	hi2c2.Init.ClockSpeed = 100000;
+	hi2c2.Init.DutyCycle = I2C_DUTYCYCLE_2;
+	hi2c2.Init.OwnAddress1 = 0;
+	hi2c2.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
+	hi2c2.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
+	hi2c2.Init.OwnAddress2 = 0;
+	hi2c2.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
+	hi2c2.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
+	if (HAL_I2C_Init(&hi2c2) != HAL_OK)
 	{
 		Error_Handler();
 	}
