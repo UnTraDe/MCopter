@@ -413,6 +413,9 @@
     <ClInclude Include="..\Inc\Semaphore.h">
       <Filter>Header files\Inc</Filter>
     </ClInclude>
+    <ClInclude Include="..\Inc\MS5637.h">
+      <Filter>Header files\Inc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Src\AxisFusion.c">
@@ -701,6 +704,9 @@
       <Filter>Source files\Device-specific files\HAL</Filter>
     </ClCompile>
     <ClCompile Include="..\Src\Semaphore.c">
+      <Filter>Source files\Src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\MS5637.c">
       <Filter>Source files\Src</Filter>
     </ClCompile>
   </ItemGroup>

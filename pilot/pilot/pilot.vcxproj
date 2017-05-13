@@ -180,6 +180,7 @@
     <ClInclude Include="..\Inc\ICM20689.h" />
     <ClInclude Include="..\Inc\main.h" />
     <ClInclude Include="..\Inc\Motors.h" />
+    <ClInclude Include="..\Inc\MS5637.h" />
     <ClInclude Include="..\Inc\PID.h" />
     <ClInclude Include="..\Inc\Quaternion.h" />
     <ClInclude Include="..\Inc\Semaphore.h" />
@@ -277,6 +278,7 @@
     <ClCompile Include="..\Src\ICM20689.c" />
     <ClCompile Include="..\Src\main.c" />
     <ClCompile Include="..\Src\Motors.c" />
+    <ClCompile Include="..\Src\MS5637.c" />
     <ClCompile Include="..\Src\PID.c" />
     <ClCompile Include="..\Src\Quaternion.c" />
     <ClCompile Include="..\Src\Semaphore.c" />
