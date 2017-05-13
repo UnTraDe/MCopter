@@ -509,7 +509,7 @@ int main(void)
 			float output_roll = 0.0f;
 			float output_yaw = 0.0f;
 			
-			float dt_ms = 0.01f;
+			float dt_ms = 0.01f; // TODO IMPORTANTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT
 
 			if (_throttle >= THROTTLE_THRESHOLD)
 			{
