@@ -49,6 +49,8 @@
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
+ADC_HandleTypeDef hadc1;
+
 I2C_HandleTypeDef hi2c1;
 I2C_HandleTypeDef hi2c2;
 
@@ -78,6 +80,7 @@ static void MX_TIM5_Init(void);
 static void MX_USART1_UART_Init(void);
 static void MX_USART6_UART_Init(void);
 static void MX_I2C2_Init(void);
+static void MX_ADC1_Init(void);
 
 void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
                                 
@@ -122,6 +125,10 @@ static volatile struct
 	uint8_t fail_safe;
 } _receiver_data;
 
+#define BATTERY_VOLTAGE_PERIOD		1000
+#define BATTERY_LOW_THRESHOLD		10.8f
+#define BATTERY_VOLTAGE_MULTIPLIER	3.794f
+#define THROTTLE_THRESHOLD			150
 
 #define SBUS_CHANNEL_MIN 				172
 #define SBUS_CHANNEL_MAX 				1811
@@ -218,6 +225,7 @@ int main(void)
 	MX_USART1_UART_Init();
 	MX_USART6_UART_Init();
 	MX_I2C2_Init();
+	MX_ADC1_Init();
 
 	  /* USER CODE BEGIN 2 */
 	Motors_Init(&htim5);
@@ -304,11 +312,11 @@ int main(void)
 	uint32_t now = HAL_GetTick();
 	uint32_t last = now;
 	
+	uint32_t battery_voltage_timer = 0;
 	uint32_t test_timer = 0;
 	uint32_t hz_timer = 0;
 	
 	uint32_t hz_counter = 0;
-	
 	
 	uint8_t cmd;
 	
@@ -338,12 +346,18 @@ int main(void)
 //	uint8_t id = 0;
 //	HAL_I2C_Master_Receive(&hi2c2, (0x0E << 1) | 0x01, (uint8_t*)&id, 1, 100);
 	
+	float battery_voltage = 12.6f;
+	float battery_voltage_idle = 12.6f;
+	
+	// TODO intialize those with actual values from the ADC
+	
 	while (1)
 	{
-		now = HAL_GetTick();
+		now = HAL_GetTick(); // TODO handle rollover
 		uint32_t dt_ms = now - last;
 		last = now;
 		
+		battery_voltage_timer += dt_ms;
 		test_timer += dt_ms;
 		hz_timer += dt_ms;
 		
@@ -397,6 +411,47 @@ int main(void)
 			//continue;
 		}
 		
+		if (battery_voltage_timer >= BATTERY_VOLTAGE_PERIOD)
+		{
+			battery_voltage_timer = 0;
+			
+			HAL_StatusTypeDef status = HAL_ADC_Start(&hadc1);
+			status = HAL_ADC_PollForConversion(&hadc1, 10);
+		
+			if (status != HAL_TIMEOUT)
+			{
+				uint32_t val = HAL_ADC_GetValue(&hadc1);
+				float voltage = (3.3f / 4096.0f) * val;
+				battery_voltage = voltage * BATTERY_VOLTAGE_MULTIPLIER;
+				
+				if (_throttle < THROTTLE_THRESHOLD)
+					battery_voltage_idle = voltage * BATTERY_VOLTAGE_MULTIPLIER;
+				
+				// TODO averaging samples?
+			}
+			else
+			{
+				battery_voltage = 0.0f;
+			}
+		
+			HAL_ADC_Stop(&hadc1);
+		}
+		
+		if (battery_voltage_idle <= BATTERY_LOW_THRESHOLD)
+		{
+			float motors[4] = { 0 };
+			Motors_Set(motors);
+			
+			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, GPIO_PIN_SET);
+			HAL_Delay(200);
+			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, GPIO_PIN_RESET);
+			HAL_Delay(200);
+			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, GPIO_PIN_SET);
+			HAL_Delay(200);
+			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, GPIO_PIN_RESET);
+			HAL_Delay(1000);
+		}
+		
 		if (_imu_data_ready)
 		{
 			_imu_data_ready = 0;
@@ -429,10 +484,6 @@ int main(void)
 			yaw *= 180.0f / PI;
 			roll *= 180.0f / PI;
 			
-			float t = pitch;
-			pitch = -roll;
-			roll = t;
-			
 //			if (test_timer >= 100)
 //			{
 //				test_timer = 0;
@@ -447,7 +498,7 @@ int main(void)
 			float output_roll = 0.0f;
 			float output_yaw = 0.0f;
 
-			if (_throttle >= 150)
+			if (_throttle >= THROTTLE_THRESHOLD)
 			{
 				output_pitch = PID_Compute(&_pid_pitch, _target_pitch, pitch, dt_ms);
 				output_roll = PID_Compute(&_pid_roll, _target_roll, roll, dt_ms);
@@ -468,23 +519,23 @@ int main(void)
 			motors[3] = _throttle - output_pitch + output_roll - output_yaw; // Front Left
 			
 			_throttle = 500;
+//			
+//			if (test_timer >= 10)
+//			{
+//				test_timer = 0;
+//				uint8_t output[64] = { 0 };
+//				sprintf((char*)output, "%f, %f, %f\n", output_pitch, output_roll, output_yaw);
+//				HAL_UART_Transmit(&huart6, output, strlen((char*)output), 1000);
+//			}
 			
 			if (test_timer >= 10)
 			{
 				test_timer = 0;
 				uint8_t output[64] = { 0 };
-				sprintf((char*)output, "%f, %f, %f\n", output_pitch, output_roll, output_yaw);
+				sprintf((char*)output, "%f, %f, %f, %f\n", motors[0], motors[1], motors[2], motors[3]);
 				HAL_UART_Transmit(&huart6, output, strlen((char*)output), 1000);
 			}
-			
-//			if (test_timer >= 10)
-//			{
-//				test_timer = 0;
-//				uint8_t output[64] = { 0 };
-//				sprintf((char*)output, "%f, %f, %f, %f\n", motors[0], motors[1], motors[2], motors[3]);
-//				HAL_UART_Transmit(&huart6, output, strlen((char*)output), 1000);
-//			}
-//			
+
 			Motors_Set(motors);
 		}
 	}
@@ -547,6 +598,43 @@ void SystemClock_Config(void)
 
 	  /* SysTick_IRQn interrupt configuration */
 	HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
+}
+
+/* ADC1 init function */
+static void MX_ADC1_Init(void)
+{
+
+	ADC_ChannelConfTypeDef sConfig;
+
+	    /**Configure the global features of the ADC (Clock, Resolution, Data Alignment and number of conversion) 
+	    */
+	hadc1.Instance = ADC1;
+	hadc1.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV4;
+	hadc1.Init.Resolution = ADC_RESOLUTION_12B;
+	hadc1.Init.ScanConvMode = DISABLE;
+	hadc1.Init.ContinuousConvMode = DISABLE;
+	hadc1.Init.DiscontinuousConvMode = DISABLE;
+	hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
+	hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
+	hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
+	hadc1.Init.NbrOfConversion = 1;
+	hadc1.Init.DMAContinuousRequests = DISABLE;
+	hadc1.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
+	if (HAL_ADC_Init(&hadc1) != HAL_OK)
+	{
+		Error_Handler();
+	}
+
+	    /**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time. 
+	    */
+	sConfig.Channel = ADC_CHANNEL_10;
+	sConfig.Rank = 1;
+	sConfig.SamplingTime = ADC_SAMPLETIME_3CYCLES;
+	if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+	{
+		Error_Handler();
+	}
+
 }
 
 /* I2C1 init function */
@@ -805,8 +893,8 @@ static void MX_GPIO_Init(void)
 
 	  /* GPIO Ports Clock Enable */
 	__HAL_RCC_GPIOH_CLK_ENABLE();
-	__HAL_RCC_GPIOA_CLK_ENABLE();
 	__HAL_RCC_GPIOC_CLK_ENABLE();
+	__HAL_RCC_GPIOA_CLK_ENABLE();
 	__HAL_RCC_GPIOB_CLK_ENABLE();
 
 	  /*Configure GPIO pin Output Level */
