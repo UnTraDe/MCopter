@@ -91,12 +91,12 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 /* USER CODE BEGIN 0 */
 
 static const float Kp = 3.0f;
-static const float Ki = 0.0f; //0.08f;
+static const float Ki = 0.08f;
 static const float Kd = 10.0f;
-static const float i_limit = 40.0f;
+static const float i_limit = 100.0f;
 
 static const float Kp_yaw = 8.0f;
-static const float Ki_yaw = 0.0f; //0.4f;
+static const float Ki_yaw = 0.4f;
 static const float Kd_yaw = 0.0f;
 static const float i_limit_yaw = 40.0f;
 
@@ -278,10 +278,11 @@ int main(void)
   /* USER CODE BEGIN 3 */
 	
 	
-	float gyro_bias[3] = { 0 };
-	float accel_bias[3] = { 0 };
-	//CalculateBias(gyro_bias, accel_bias);
-	
+
+	float gyro_bias[3] = { 0.503540, 1.441956, 0.129700 };
+	float accel_bias[3] = { -0.000305, -0.004944, 0.017456 };
+//	CalculateBias(gyro_bias, accel_bias);
+//	
 //	uint8_t output[128] = { 0 };
 //	sprintf((char*)output, "%f, %f, %f\r\n%f, %f, %f\r\n", gyro_bias[0], gyro_bias[1], gyro_bias[2], accel_bias[0], accel_bias[1], accel_bias[2]);
 //	HAL_UART_Transmit(&huart6, output, strlen((char*)output), 100);
@@ -403,6 +404,14 @@ int main(void)
 			
 			_receiver_data_ready = 0;
 		}
+//		
+//		if (test_timer >= 10)
+//		{
+//			test_timer = 0;
+//			uint8_t output[64] = { 0 };
+//			sprintf((char*)output, "%d, %d\r\n", fail_safe, _throttle);
+//			HAL_UART_Transmit(&huart6, output, strlen((char*)output), 1000);
+//		}
 		
 		if (fail_safe)
 		{
@@ -411,46 +420,50 @@ int main(void)
 			continue;
 		}
 		
-		if (battery_voltage_timer >= BATTERY_VOLTAGE_PERIOD)
-		{
-			battery_voltage_timer = 0;
-			
-			HAL_StatusTypeDef status = HAL_ADC_Start(&hadc1);
-			status = HAL_ADC_PollForConversion(&hadc1, 10);
+//		if (battery_voltage_timer >= BATTERY_VOLTAGE_PERIOD)
+//		{
+//			battery_voltage_timer = 0;
+//			
+//			HAL_StatusTypeDef status = HAL_ADC_Start(&hadc1);
+//			status = HAL_ADC_PollForConversion(&hadc1, 10);
+//		
+//			if (status != HAL_TIMEOUT)
+//			{
+//				uint32_t val = HAL_ADC_GetValue(&hadc1);
+//				float voltage = (3.3f / 4096.0f) * val;
+//				battery_voltage = voltage * BATTERY_VOLTAGE_MULTIPLIER;
+//				
+//				if (_throttle < THROTTLE_THRESHOLD)
+//					battery_voltage_idle = voltage * BATTERY_VOLTAGE_MULTIPLIER;
+//				
+////				uint8_t output[64] = { 0 };
+////				sprintf((char*)output, "%d, %f, %f\r\n", _throttle, battery_voltage, battery_voltage_idle);
+////				HAL_UART_Transmit(&huart6, output, strlen((char*)output), 1000);
+//				
+//				// TODO averaging samples?
+//			}
+//			else
+//			{
+//				battery_voltage = 0.0f;
+//			}
+//		
+//			HAL_ADC_Stop(&hadc1);
+//		}
 		
-			if (status != HAL_TIMEOUT)
-			{
-				uint32_t val = HAL_ADC_GetValue(&hadc1);
-				float voltage = (3.3f / 4096.0f) * val;
-				battery_voltage = voltage * BATTERY_VOLTAGE_MULTIPLIER;
-				
-				if (_throttle < THROTTLE_THRESHOLD)
-					battery_voltage_idle = voltage * BATTERY_VOLTAGE_MULTIPLIER;
-				
-				// TODO averaging samples?
-			}
-			else
-			{
-				battery_voltage = 0.0f;
-			}
-		
-			HAL_ADC_Stop(&hadc1);
-		}
-		
-		if (battery_voltage_idle <= BATTERY_LOW_THRESHOLD)
-		{
-			float motors[4] = { 0 };
-			Motors_Set(motors);
-			
-			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, GPIO_PIN_SET);
-			HAL_Delay(200);
-			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, GPIO_PIN_RESET);
-			HAL_Delay(200);
-			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, GPIO_PIN_SET);
-			HAL_Delay(200);
-			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, GPIO_PIN_RESET);
-			HAL_Delay(1000);
-		}
+//		if (battery_voltage_idle <= BATTERY_LOW_THRESHOLD)
+//		{
+//			float motors[4] = { 0 };
+//			Motors_Set(motors);
+//			
+//			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, GPIO_PIN_SET);
+//			HAL_Delay(200);
+//			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, GPIO_PIN_RESET);
+//			HAL_Delay(200);
+//			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, GPIO_PIN_SET);
+//			HAL_Delay(200);
+//			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, GPIO_PIN_RESET);
+//			HAL_Delay(1000);
+//		}
 		
 		if (_imu_data_ready)
 		{
