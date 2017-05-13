@@ -278,8 +278,8 @@ int main(void)
   /* USER CODE BEGIN 3 */
 	
 	
-	float gyro_bias[3] = { -1.228333, 2.250671, 0.083923 };
-	float accel_bias[3] = { 0.005554, -0.005920, 0.026794 };
+	float gyro_bias[3] = { 0 };
+	float accel_bias[3] = { 0 };
 	//CalculateBias(gyro_bias, accel_bias);
 	
 //	uint8_t output[128] = { 0 };
@@ -408,7 +408,7 @@ int main(void)
 		{
 			float motors[4] = { 0 };
 			Motors_Set(motors);
-			//continue;
+			continue;
 		}
 		
 		if (battery_voltage_timer >= BATTERY_VOLTAGE_PERIOD)
@@ -488,7 +488,7 @@ int main(void)
 //			{
 //				test_timer = 0;
 //				uint8_t output[32] = { 0 };
-//				sprintf((char*)output, "%f, %f, %f\r\n", pitch, yaw, roll);
+//				sprintf((char*)output, "%.2f, %.2f, %.2f\r\n", pitch, yaw, roll);
 //				HAL_UART_Transmit(&huart6, output, strlen((char*)output), 100);
 //			}
 			
@@ -513,28 +513,30 @@ int main(void)
 	
 			float motors[4];
 			
-			motors[0] = _throttle + output_pitch - output_roll - output_yaw; // Back Right
-			motors[1] = _throttle + output_pitch + output_roll + output_yaw; // Back Left
-			motors[2] = _throttle - output_pitch - output_roll + output_yaw; // Front Right
-			motors[3] = _throttle - output_pitch + output_roll - output_yaw; // Front Left
+			//output_yaw = 0;
 			
-			_throttle = 500;
+			motors[0] = _throttle + output_pitch - output_roll + output_yaw; // Back Right
+			motors[1] = _throttle + output_pitch + output_roll - output_yaw; // Back Left
+			motors[2] = _throttle - output_pitch - output_roll - output_yaw; // Front Right
+			motors[3] = _throttle - output_pitch + output_roll + output_yaw; // Front Left
+			
+//			_throttle = 500;
 //			
 //			if (test_timer >= 10)
 //			{
 //				test_timer = 0;
 //				uint8_t output[64] = { 0 };
-//				sprintf((char*)output, "%f, %f, %f\n", output_pitch, output_roll, output_yaw);
+//				sprintf((char*)output, "%.2f, %.2f, %.2f\n", output_pitch, output_roll, output_yaw);
 //				HAL_UART_Transmit(&huart6, output, strlen((char*)output), 1000);
 //			}
 			
-			if (test_timer >= 10)
-			{
-				test_timer = 0;
-				uint8_t output[64] = { 0 };
-				sprintf((char*)output, "%.2f, %.2f, %.2f, %.2f\n", motors[0], motors[1], motors[2], motors[3]);
-				HAL_UART_Transmit(&huart6, output, strlen((char*)output), 1000);
-			}
+//			if (test_timer >= 10)
+//			{
+//				test_timer = 0;
+//				uint8_t output[64] = { 0 };
+//				sprintf((char*)output, "%.2f, %.2f, %.2f, %.2f\n", motors[0], motors[1], motors[2], motors[3]);
+//				HAL_UART_Transmit(&huart6, output, strlen((char*)output), 1000);
+//			}
 
 			Motors_Set(motors);
 		}
