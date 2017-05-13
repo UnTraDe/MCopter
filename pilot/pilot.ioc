@@ -1,9 +1,22 @@
 #MicroXplorer Configuration settings - do not modify
 ADC1.Channel-0\#ChannelRegularConversion=ADC_CHANNEL_10
-ADC1.IPParameters=Rank-0\#ChannelRegularConversion,Channel-0\#ChannelRegularConversion,SamplingTime-0\#ChannelRegularConversion,NbrOfConversionFlag,master
+ADC1.ClockPrescaler=ADC_CLOCK_SYNC_PCLK_DIV4
+ADC1.ContinuousConvMode=DISABLE
+ADC1.DMAContinuousRequests=DISABLE
+ADC1.DataAlign=ADC_DATAALIGN_RIGHT
+ADC1.DiscontinuousConvMode=DISABLE
+ADC1.EOCSelection=ADC_EOC_SINGLE_CONV
+ADC1.EnableAnalogWatchDog=false
+ADC1.ExternalTrigConv=ADC_SOFTWARE_START
+ADC1.ExternalTrigConvEdge=ADC_EXTERNALTRIGCONVEDGE_NONE
+ADC1.IPParameters=Rank-0\#ChannelRegularConversion,Channel-0\#ChannelRegularConversion,SamplingTime-0\#ChannelRegularConversion,NbrOfConversionFlag,master,ClockPrescaler,Resolution,DataAlign,ScanConvMode,ContinuousConvMode,DiscontinuousConvMode,DMAContinuousRequests,EOCSelection,NbrOfConversion,ExternalTrigConv,ExternalTrigConvEdge,InjNumberOfConversion,EnableAnalogWatchDog
+ADC1.InjNumberOfConversion=0
+ADC1.NbrOfConversion=1
 ADC1.NbrOfConversionFlag=1
 ADC1.Rank-0\#ChannelRegularConversion=1
+ADC1.Resolution=ADC_RESOLUTION_12B
 ADC1.SamplingTime-0\#ChannelRegularConversion=ADC_SAMPLETIME_3CYCLES
+ADC1.ScanConvMode=DISABLE
 ADC1.master=1
 Dma.Request0=USART1_RX
 Dma.RequestsNb=1
