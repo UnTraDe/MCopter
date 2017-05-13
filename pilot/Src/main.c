@@ -243,7 +243,7 @@ int main(void)
 	
 	_pid_pitch.kp = Kp;
 	_pid_pitch.ki = Ki;
-	_pid_pitch.kp = Kp;
+	_pid_pitch.kd = Kd;
 	_pid_pitch.i_limit = i_limit;
 	_pid_pitch.error_sum = 0.0f;
 	_pid_pitch.last_error = 0.0f;
@@ -252,7 +252,7 @@ int main(void)
 	
 	_pid_roll.kp = Kp;
 	_pid_roll.ki = Ki;
-	_pid_roll.kp = Kp;
+	_pid_roll.kd = Kd;
 	_pid_roll.i_limit = i_limit;
 	_pid_roll.error_sum = 0.0f;
 	_pid_roll.last_error = 0.0f;
@@ -261,7 +261,7 @@ int main(void)
 	
 	_pid_yaw.kp = Kp_yaw;
 	_pid_yaw.ki = Ki_yaw;
-	_pid_yaw.kp = Kp_yaw;
+	_pid_yaw.kd = Kd_yaw;
 	_pid_yaw.i_limit = i_limit_yaw;
 	_pid_yaw.error_sum = 0.0f;
 	_pid_yaw.last_error = 0.0f;
@@ -404,7 +404,7 @@ int main(void)
 			
 			_receiver_data_ready = 0;
 		}
-//		
+		
 //		if (test_timer >= 10)
 //		{
 //			test_timer = 0;
@@ -473,18 +473,18 @@ int main(void)
 			float accel[3];
 			ICM20689_ReadGyro(gyro);
 			ICM20689_ReadAccel(accel);
-			
+//			
 //			hz_counter++;
 //			
 //			if (hz_timer >= 1000)
 //			{
 //				hz_timer = 0;
 //				uint8_t output[16] = { 0 };
-//				sprintf((char*)output, "%d\r\n", counter);
-//				counter = 0;
+//				sprintf((char*)output, "%d\r\n", hz_counter);
+//				hz_counter = 0;
 //				HAL_UART_Transmit(&huart6, output, strlen((char*)output), 100);
 //			}
-//			
+			
 			AxisFusion_MahonyAHRSupdateIMU(_orientation, gyro[0]*PI / 180.0f, gyro[1]*PI / 180.0f, gyro[2]*PI / 180.0f, accel[0], accel[1], accel[2]);
 		
 			float quat[4];
@@ -505,11 +505,11 @@ int main(void)
 //				HAL_UART_Transmit(&huart6, output, strlen((char*)output), 100);
 //			}
 			
-			float dt_ms;
-			
 			float output_pitch = 0.0f;
 			float output_roll = 0.0f;
 			float output_yaw = 0.0f;
+			
+			float dt_ms = 0.01f;
 
 			if (_throttle >= THROTTLE_THRESHOLD)
 			{
@@ -526,20 +526,18 @@ int main(void)
 	
 			float motors[4];
 			
-			//output_yaw = 0;
-			
 			motors[0] = _throttle + output_pitch - output_roll + output_yaw; // Back Right
 			motors[1] = _throttle + output_pitch + output_roll - output_yaw; // Back Left
 			motors[2] = _throttle - output_pitch - output_roll - output_yaw; // Front Right
 			motors[3] = _throttle - output_pitch + output_roll + output_yaw; // Front Left
 			
-//			_throttle = 500;
-//			
+			Motors_Set(motors);
+			
 //			if (test_timer >= 10)
 //			{
 //				test_timer = 0;
 //				uint8_t output[64] = { 0 };
-//				sprintf((char*)output, "%.2f, %.2f, %.2f\n", output_pitch, output_roll, output_yaw);
+//				sprintf((char*)output, "%.2f, %.2f, %.2f\r\n", output_pitch, output_roll, output_yaw);
 //				HAL_UART_Transmit(&huart6, output, strlen((char*)output), 1000);
 //			}
 			
@@ -551,7 +549,7 @@ int main(void)
 //				HAL_UART_Transmit(&huart6, output, strlen((char*)output), 1000);
 //			}
 
-			Motors_Set(motors);
+			
 		}
 	}
 	
