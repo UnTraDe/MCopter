@@ -532,7 +532,7 @@ int main(void)
 			{
 				test_timer = 0;
 				uint8_t output[64] = { 0 };
-				sprintf((char*)output, "%f, %f, %f, %f\n", motors[0], motors[1], motors[2], motors[3]);
+				sprintf((char*)output, "%.2f, %.2f, %.2f, %.2f\n", motors[0], motors[1], motors[2], motors[3]);
 				HAL_UART_Transmit(&huart6, output, strlen((char*)output), 1000);
 			}
 
