@@ -20,7 +20,8 @@ Currently there is a working PCB for the flight controller + basic firmware.
 ![](https://i.imgur.com/9LejJzh.png)
 
 This is version 2.0 of the flight controller PCB.
-The PCB is design with 2 layers to keep down the cost, in the future I might redesign it with 4 layers to make it smaller.
+The PCB is design with 2 layers to keep down the cost, in the future I might redesign it with 4 layers to make it smaller. I'm also using 0805 to allow for easy hand-soldering.
+
 The microcontroller is STM32F410RBT, a powerful 32-bit ARM Cortex M4 with hardware floating point unit and a lot of useful peripherals.
 
 Other major components (sensors):
