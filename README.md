@@ -31,7 +31,7 @@ Other major components (sensors):
 * MAG3110; A magnetometer.
 * MS5637; A Barometer
 
-The ICM-20689 togheter with the MAG3110 can be used for 9-axis fusion to provide better heading (yaw) controller and avoid drifting, and with the barometer we can also have an height based control instead of throttle.
+The ICM-20689 togheter with the MAG3110 can be used for 9-axis fusion to provide better heading, avoid yaw drifting and togheter with the barometer also have an height based control instead of throttle based one.
 
 ![](https://i.imgur.com/nqLHzKc.jpg)
 
