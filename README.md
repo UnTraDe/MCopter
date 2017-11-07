@@ -8,6 +8,7 @@ Currently there is a working PCB for the flight controller + basic firmware.
 
 * Simple PID flight stabilization
 * Radio communication via external radio module (both controlling the copter and sending telemtry data to the controller
+* Simple remote controller made out of an old RC toy radio + arduino pro mini + nRF24
 
 ### Planned
 
